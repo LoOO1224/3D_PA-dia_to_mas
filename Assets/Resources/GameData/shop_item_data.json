@@ -8,6 +8,7 @@
       "priceAmount": 45,
       "sellCurrencyId": "gold",
       "sellAmount": 22,
+      "isShopListed": true,
       "isStackable": true,
       "stockCount": 99
     },
@@ -19,6 +20,7 @@
       "priceAmount": 6,
       "sellCurrencyId": "gold",
       "sellAmount": 90,
+      "isShopListed": true,
       "isStackable": false,
       "stockCount": 3
     },
@@ -30,6 +32,7 @@
       "priceAmount": 130,
       "sellCurrencyId": "gold",
       "sellAmount": 65,
+      "isShopListed": true,
       "isStackable": false,
       "stockCount": 1
     },
@@ -41,8 +44,81 @@
       "priceAmount": 2,
       "sellCurrencyId": "gold",
       "sellAmount": 70,
+      "isShopListed": true,
       "isStackable": true,
       "stockCount": 4
+    },
+    {
+      "id": "goblin_ear",
+      "displayName": "Goblin Ear",
+      "description": "A proof token taken from a goblin scout.",
+      "priceCurrencyId": "gold",
+      "priceAmount": 18,
+      "sellCurrencyId": "gold",
+      "sellAmount": 9,
+      "isShopListed": false,
+      "isStackable": true,
+      "stockCount": 0
+    },
+    {
+      "id": "orc_tusk",
+      "displayName": "Orc Tusk",
+      "description": "A heavy tusk carried as a hunter's trophy.",
+      "priceCurrencyId": "gold",
+      "priceAmount": 42,
+      "sellCurrencyId": "gold",
+      "sellAmount": 21,
+      "isShopListed": false,
+      "isStackable": true,
+      "stockCount": 0
+    },
+    {
+      "id": "wolf_pelt",
+      "displayName": "Wolf Pelt",
+      "description": "A clean pelt useful to village leatherworkers.",
+      "priceCurrencyId": "gold",
+      "priceAmount": 34,
+      "sellCurrencyId": "gold",
+      "sellAmount": 17,
+      "isShopListed": false,
+      "isStackable": true,
+      "stockCount": 0
+    },
+    {
+      "id": "bandit_signet",
+      "displayName": "Bandit Signet",
+      "description": "A tarnished ring taken from a road bandit.",
+      "priceCurrencyId": "gold",
+      "priceAmount": 90,
+      "sellCurrencyId": "gold",
+      "sellAmount": 45,
+      "isShopListed": false,
+      "isStackable": true,
+      "stockCount": 0
+    },
+    {
+      "id": "rune_shard",
+      "displayName": "Rune Shard",
+      "description": "A cracked crystal shard still holding faint magic.",
+      "priceCurrencyId": "crystal",
+      "priceAmount": 4,
+      "sellCurrencyId": "crystal",
+      "sellAmount": 2,
+      "isShopListed": false,
+      "isStackable": true,
+      "stockCount": 0
+    },
+    {
+      "id": "ancient_bone",
+      "displayName": "Ancient Bone",
+      "description": "A rare bone fragment from a cursed ruin.",
+      "priceCurrencyId": "gold",
+      "priceAmount": 56,
+      "sellCurrencyId": "gold",
+      "sellAmount": 28,
+      "isShopListed": false,
+      "isStackable": true,
+      "stockCount": 0
     }
   ]
 }

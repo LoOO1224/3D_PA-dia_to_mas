@@ -36,7 +36,7 @@ namespace DiaToMas.Player
         private void ReadActionInput()
         {
             _isJumpPressed = Input.GetButtonDown("Jump");
-            _isInteractPressed = Input.GetKeyDown(KeyCode.E);
+            _isInteractPressed = Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(0);
             _isRunHeld = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
         }
 

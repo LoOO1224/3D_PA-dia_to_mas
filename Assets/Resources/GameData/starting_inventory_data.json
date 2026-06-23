@@ -1,0 +1,34 @@
+{
+  "items": [
+    {
+      "id": "start_goblin_ear",
+      "itemId": "goblin_ear",
+      "amount": 5
+    },
+    {
+      "id": "start_orc_tusk",
+      "itemId": "orc_tusk",
+      "amount": 2
+    },
+    {
+      "id": "start_wolf_pelt",
+      "itemId": "wolf_pelt",
+      "amount": 3
+    },
+    {
+      "id": "start_bandit_signet",
+      "itemId": "bandit_signet",
+      "amount": 1
+    },
+    {
+      "id": "start_rune_shard",
+      "itemId": "rune_shard",
+      "amount": 4
+    },
+    {
+      "id": "start_ancient_bone",
+      "itemId": "ancient_bone",
+      "amount": 1
+    }
+  ]
+}

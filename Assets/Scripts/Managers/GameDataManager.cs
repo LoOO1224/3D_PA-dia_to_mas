@@ -8,20 +8,24 @@ namespace DiaToMas.Managers
     {
         [SerializeField] private TextAsset _currencyDataJson;
         [SerializeField] private TextAsset _shopItemDataJson;
+        [SerializeField] private TextAsset _startingInventoryDataJson;
         [SerializeField] private TextAsset _playerMovementDataJson;
 
         private readonly Dictionary<string, CurrencyData> _currencyDataById = new();
         private readonly Dictionary<string, ShopItemData> _shopItemDataById = new();
+        private readonly List<StartingInventoryData> _startingInventoryDataList = new();
         private PlayerMovementData _playerMovementData;
 
         public IReadOnlyDictionary<string, CurrencyData> CurrencyDataById => _currencyDataById;
         public IReadOnlyDictionary<string, ShopItemData> ShopItemDataById => _shopItemDataById;
+        public IReadOnlyList<StartingInventoryData> StartingInventoryDataList => _startingInventoryDataList;
         public PlayerMovementData PlayerMovementData => _playerMovementData;
 
         public void LoadData()
         {
             LoadDictionary(_currencyDataJson, _currencyDataById);
             LoadDictionary(_shopItemDataJson, _shopItemDataById);
+            LoadList(_startingInventoryDataJson, _startingInventoryDataList);
             _playerMovementData = LoadFirst<PlayerMovementData>(_playerMovementDataJson);
         }
 
@@ -44,6 +48,19 @@ namespace DiaToMas.Managers
             {
                 target[data.id] = data;
             }
+        }
+
+        private static void LoadList<T>(TextAsset jsonAsset, List<T> target) where T : GameDataBase
+        {
+            target.Clear();
+
+            if (jsonAsset == null)
+            {
+                return;
+            }
+
+            GameDataList<T> dataList = JsonUtility.FromJson<GameDataList<T>>(jsonAsset.text);
+            target.AddRange(dataList.items);
         }
 
         private static T LoadFirst<T>(TextAsset jsonAsset) where T : GameDataBase

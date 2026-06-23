@@ -45,6 +45,11 @@ namespace DiaToMas.Managers
                 _playerModel.WalletModel.SetAmount(currencyData.id, currencyData.startAmount);
             }
 
+            foreach (StartingInventoryData inventoryData in _gameDataManager.StartingInventoryDataList)
+            {
+                _playerModel.InventoryModel.AddItem(inventoryData.itemId, inventoryData.amount);
+            }
+
             _shopStockModel = new ShopStockModel();
             _shopStockModel.Initialize(_gameDataManager.ShopItemDataById.Values);
             _shopTransactionService = new ShopTransactionService();

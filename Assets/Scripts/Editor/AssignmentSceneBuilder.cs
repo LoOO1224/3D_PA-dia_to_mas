@@ -82,6 +82,7 @@ namespace DiaToMas.Editor
 
             SetObject(dataManager, "_currencyDataJson", Load<TextAsset>("Assets/Resources/GameData/currency_data.json"));
             SetObject(dataManager, "_shopItemDataJson", Load<TextAsset>("Assets/Resources/GameData/shop_item_data.json"));
+            SetObject(dataManager, "_startingInventoryDataJson", Load<TextAsset>("Assets/Resources/GameData/starting_inventory_data.json"));
             SetObject(dataManager, "_playerMovementDataJson", Load<TextAsset>("Assets/Resources/GameData/player_movement_data.json"));
             SetObject(gameManager, "_gameDataManager", dataManager);
         }
@@ -241,7 +242,7 @@ namespace DiaToMas.Editor
             canvasObject.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             canvasObject.AddComponent<GraphicRaycaster>();
 
-            GameObject promptObject = CreateText("PromptText", canvasObject.transform, "Press E to trade", 28, TextAnchor.MiddleCenter, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 62f), new Vector2(520f, 48f)).gameObject;
+            GameObject promptObject = CreateText("PromptText", canvasObject.transform, "Press E or Left Click to trade", 28, TextAnchor.MiddleCenter, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 62f), new Vector2(680f, 48f)).gameObject;
             promptObject.SetActive(false);
 
             GameObject panel = CreatePanel("ShopPanel", canvasObject.transform, new Color(0.08f, 0.065f, 0.045f, 0.94f), new Vector2(0.5f, 0.5f), new Vector2(980f, 620f));

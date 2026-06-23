@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DiaToMas.CameraSystem;
 using DiaToMas.Data;
 using DiaToMas.Interaction;
+using DiaToMas.Managers;
 using DiaToMas.Models;
 using DiaToMas.Player;
 using DiaToMas.Services;
@@ -18,11 +19,13 @@ namespace DiaToMas.Editor
         private const string ScenePath = "Assets/Scenes/3D_PA-dia_to_mas.unity";
         private const string CurrencyDataPath = "Assets/Resources/GameData/currency_data.json";
         private const string ShopItemDataPath = "Assets/Resources/GameData/shop_item_data.json";
+        private const string StartingInventoryDataPath = "Assets/Resources/GameData/starting_inventory_data.json";
 
         public static void Run()
         {
             EditorSceneManager.OpenScene(ScenePath);
             ValidateSceneObjects();
+            ValidateGameDataReferences();
             ValidateShopPresenterReferences();
             ValidateTransactionFlow();
             Debug.Log("Assignment smoke test passed.");
@@ -53,6 +56,17 @@ namespace DiaToMas.Editor
             RequireGameObject("EventSystem");
         }
 
+        private static void ValidateGameDataReferences()
+        {
+            GameDataManager dataManager = UnityEngine.Object.FindFirstObjectByType<GameDataManager>();
+            Require(dataManager != null, "Scene needs a GameDataManager.");
+
+            RequireReference(dataManager, "_currencyDataJson");
+            RequireReference(dataManager, "_shopItemDataJson");
+            RequireReference(dataManager, "_startingInventoryDataJson");
+            RequireReference(dataManager, "_playerMovementDataJson");
+        }
+
         private static void ValidateShopPresenterReferences()
         {
             ShopPresenter presenter = UnityEngine.Object.FindFirstObjectByType<ShopPresenter>();
@@ -78,8 +92,13 @@ namespace DiaToMas.Editor
         {
             List<CurrencyData> currencyDataList = LoadData<CurrencyData>(CurrencyDataPath);
             List<ShopItemData> shopItemDataList = LoadData<ShopItemData>(ShopItemDataPath);
+            List<StartingInventoryData> startingInventoryDataList = LoadData<StartingInventoryData>(StartingInventoryDataPath);
             ShopItemData potionData = shopItemDataList.Find(itemData => itemData.id == "traveler_potion");
+            ShopItemData runeShardData = shopItemDataList.Find(itemData => itemData.id == "rune_shard");
             Require(potionData != null, "traveler_potion data is required.");
+            Require(runeShardData != null, "rune_shard data is required.");
+            Require(potionData.isShopListed, "traveler_potion should be listed in the shop.");
+            Require(!runeShardData.isShopListed, "rune_shard should be inventory loot, not a shop-listed item.");
 
             PlayerModel playerModel = new();
             foreach (CurrencyData currencyData in currencyDataList)
@@ -87,12 +106,20 @@ namespace DiaToMas.Editor
                 playerModel.WalletModel.SetAmount(currencyData.id, currencyData.startAmount);
             }
 
+            foreach (StartingInventoryData inventoryData in startingInventoryDataList)
+            {
+                playerModel.InventoryModel.AddItem(inventoryData.itemId, inventoryData.amount);
+            }
+
             ShopStockModel stockModel = new();
             stockModel.Initialize(shopItemDataList);
             ShopTransactionService transactionService = new();
 
             int startGold = playerModel.WalletModel.GetAmount("gold");
+            int startCrystal = playerModel.WalletModel.GetAmount("crystal");
             int startStock = stockModel.GetStockCount(potionData.id);
+            int startRuneShardAmount = playerModel.InventoryModel.GetAmount(runeShardData.id);
+            Require(startRuneShardAmount > 0, "Starting inventory should include rune shards.");
 
             Require(transactionService.TryBuy(playerModel, stockModel, potionData, out _), "Potion purchase should succeed.");
             Require(playerModel.InventoryModel.GetAmount(potionData.id) == 1, "Potion purchase should add one inventory item.");
@@ -103,6 +130,10 @@ namespace DiaToMas.Editor
             Require(playerModel.InventoryModel.GetAmount(potionData.id) == 0, "Potion sale should remove inventory item.");
             Require(playerModel.WalletModel.GetAmount("gold") == startGold - potionData.priceAmount + potionData.sellAmount, "Potion sale should add sell currency.");
             Require(stockModel.GetStockCount(potionData.id) == startStock, "Potion sale should restore stock.");
+
+            Require(transactionService.TrySell(playerModel, stockModel, runeShardData, out _), "Rune shard sale should succeed.");
+            Require(playerModel.InventoryModel.GetAmount(runeShardData.id) == startRuneShardAmount - 1, "Rune shard sale should remove one shard.");
+            Require(playerModel.WalletModel.GetAmount("crystal") == startCrystal + runeShardData.sellAmount, "Rune shard sale should add crystal currency.");
 
             Require(transactionService.TrySellLoot(playerModel, out _), "Loot sale should succeed with starting loot.");
         }

@@ -117,6 +117,11 @@ namespace DiaToMas.UI
 
             foreach (ShopItemData itemData in dataManager.ShopItemDataById.Values)
             {
+                if (!itemData.isShopListed)
+                {
+                    continue;
+                }
+
                 ShopItemButtonView row = Instantiate(_itemButtonPrefab, _itemRoot);
                 string currencyName = GetCurrencyName(itemData.priceCurrencyId);
                 int stockCount = stockModel.GetStockCount(itemData.id);
