@@ -22,6 +22,7 @@ namespace DiaToMas.Editor
             "GameManager",
             "Scene_Environment",
             "Player_Mage",
+            "Player_Adventurer",
             "Merchant",
             "Main Camera",
             "ThirdPersonCamera",
@@ -126,7 +127,7 @@ namespace DiaToMas.Editor
 
         private static GameObject CreatePlayer(Transform cameraTransform)
         {
-            GameObject player = PlacePrefab("Assets/ImportedAssets/FantasyAnimatedCharacters/Fantasy animated characters pack/Mage animated character/Prefab/Mage.prefab", "Player_Mage", new Vector3(0f, 0.2f, -1.8f), Quaternion.identity, Vector3.one, null, null);
+            GameObject player = PlacePrefab("Assets/ImportedAssets/FantasyAnimatedCharacters/Fantasy animated characters pack/Peasant animated character/Prefab/Peasant.prefab", "Player_Adventurer", new Vector3(0f, 0.2f, 6f), Quaternion.Euler(0f, 180f, 0f), Vector3.one, null, null);
             player.tag = "Player";
 
             Rigidbody rigidbody = player.GetComponent<Rigidbody>();
@@ -183,6 +184,10 @@ namespace DiaToMas.Editor
             SetObject(movement, "_groundCheckPoint", groundCheckPoint.transform);
             SetObject(animatorView, "_movement", movement);
             SetObject(animatorView, "_animator", player.GetComponentInChildren<Animator>());
+            SetString(animatorView, "_idleStateName", "Peasant_Idle");
+            SetString(animatorView, "_walkStateName", "Peasant_Walk");
+            SetString(animatorView, "_runStateName", "Peasant_Walk");
+            SetFloat(animatorView, "_runPlaybackSpeed", 1.5f);
             SetObject(clickInteractor, "_camera", cameraTransform.GetComponent<Camera>());
             return player;
         }
@@ -477,6 +482,20 @@ namespace DiaToMas.Editor
         {
             SerializedObject serializedObject = new(target);
             serializedObject.FindProperty(propertyName).objectReferenceValue = value;
+            serializedObject.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void SetString(Object target, string propertyName, string value)
+        {
+            SerializedObject serializedObject = new(target);
+            serializedObject.FindProperty(propertyName).stringValue = value;
+            serializedObject.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void SetFloat(Object target, string propertyName, float value)
+        {
+            SerializedObject serializedObject = new(target);
+            serializedObject.FindProperty(propertyName).floatValue = value;
             serializedObject.ApplyModifiedPropertiesWithoutUndo();
         }
     }

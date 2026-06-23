@@ -33,7 +33,7 @@ namespace DiaToMas.Editor
 
         private static void ValidateSceneObjects()
         {
-            GameObject player = RequireGameObject("Player_Mage");
+            GameObject player = RequireGameObject("Player_Adventurer");
             RequireComponent<Rigidbody>(player);
             RequireComponent<PlayerInputReader>(player);
             RequireComponent<PlayerClickInteractor>(player);
@@ -41,7 +41,7 @@ namespace DiaToMas.Editor
 
             if (player.GetComponentInChildren<Animator>() == null)
             {
-                throw new InvalidOperationException("Player_Mage needs an Animator in children.");
+                throw new InvalidOperationException("Player_Adventurer needs an Animator in children.");
             }
 
             GameObject merchant = RequireGameObject("Merchant");

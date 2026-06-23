@@ -19,6 +19,8 @@ namespace DiaToMas.Player
         [SerializeField] private string _runStateName = "Mage_Run";
         [SerializeField] private float _moveThreshold = 0.1f;
         [SerializeField] private float _crossFadeDuration = 0.12f;
+        [SerializeField] private float _walkPlaybackSpeed = 1f;
+        [SerializeField] private float _runPlaybackSpeed = 1.45f;
 
         private readonly HashSet<int> _parameterHashes = new();
         private int _currentStateHash;
@@ -65,6 +67,8 @@ namespace DiaToMas.Player
             {
                 CrossFadeMovementState();
             }
+
+            UpdatePlaybackSpeed();
         }
 
         private void CrossFadeMovementState()
@@ -97,6 +101,17 @@ namespace DiaToMas.Player
             }
 
             return _walkStateName;
+        }
+
+        private void UpdatePlaybackSpeed()
+        {
+            if (_movement.MoveAmount <= _moveThreshold)
+            {
+                _animator.speed = 1f;
+                return;
+            }
+
+            _animator.speed = _movement.IsRunning ? _runPlaybackSpeed : _walkPlaybackSpeed;
         }
 
         private bool TryGetStateHash(string stateName, out int stateHash)
