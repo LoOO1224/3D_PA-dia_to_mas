@@ -46,8 +46,15 @@ namespace DiaToMas.Editor
 
             GameObject merchant = RequireGameObject("Merchant");
             RequireComponent<ShopInteractable>(merchant);
+            RequireComponent<NpcIdleAnimatorView>(merchant);
             Collider merchantCollider = RequireComponent<Collider>(merchant);
             Require(merchantCollider.isTrigger, "Merchant collider must be a trigger.");
+            Require(merchant.GetComponentInChildren<Animator>() != null, "Merchant needs an animated model.");
+
+            RequireGameObject("Market_Square");
+            RequireGameObject("Merchant_Stall");
+            RequireGameObject("Market_Stone_Path");
+            RequireGameObject("Village_Backdrop");
 
             GameObject pickup = RequireGameObject("WorldPickup_WolfPelt");
             RequireComponent<WorldItemPickup>(pickup);

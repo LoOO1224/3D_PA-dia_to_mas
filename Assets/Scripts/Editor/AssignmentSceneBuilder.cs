@@ -106,53 +106,42 @@ namespace DiaToMas.Editor
         {
             GameObject root = new("Scene_Environment");
 
-            GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            ground.name = "Ground";
-            ground.transform.SetParent(root.transform);
-            ground.transform.localScale = new Vector3(10f, 1f, 10f);
-            ground.GetComponent<Renderer>().sharedMaterial = groundMaterial;
+            Material dirtMaterial = CreateTexturedMaterial("Market_Dirt", "Assets/PolygonFantasyKingdom/Textures/Ground/PFK_Texture_Ground_Mud_02.png", new Color(0.42f, 0.34f, 0.24f), new Vector2(8f, 8f));
+            Material roadMaterial = CreateTexturedMaterial("Market_Road_Stone", "Assets/PolygonFantasyKingdom/Textures/Ground/PFK_Texture_Ground_Sand_03.png", new Color(0.42f, 0.39f, 0.34f), new Vector2(4f, 7f));
 
-            GameObject shopRoot = new("Shop_Interior");
-            shopRoot.transform.SetParent(root.transform);
-            shopRoot.transform.position = Vector3.zero;
+            CreateGroundPlane("Ground", root.transform, dirtMaterial, Vector3.zero, new Vector3(9f, 1f, 9f), true);
+            CreateGroundPlane("Market_Stone_Path", root.transform, roadMaterial, new Vector3(0f, 0.012f, 1.8f), new Vector3(0.55f, 1f, 1.25f), false);
 
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/House/SM_Bld_House_Floor_Wood_01.prefab", "Shop_Floor", new Vector3(0f, 0.02f, 0f), Quaternion.identity, Vector3.one * 1.25f, shopRoot.transform, woodMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/House/SM_Bld_House_Wall_Door_01.prefab", "Shop_Door_Wall", new Vector3(0f, 0f, 3.2f), Quaternion.Euler(0f, 180f, 0f), Vector3.one, shopRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/House/SM_Bld_House_Wall_01.prefab", "Shop_Back_Wall", new Vector3(0f, 0f, -3.2f), Quaternion.identity, Vector3.one, shopRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/House/SM_Bld_House_Wall_02.prefab", "Shop_Left_Wall", new Vector3(-3.2f, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), Vector3.one, shopRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/House/SM_Bld_House_Wall_02.prefab", "Shop_Right_Wall", new Vector3(3.2f, 0f, 0f), Quaternion.Euler(0f, -90f, 0f), Vector3.one, shopRoot.transform, fallbackMaterial);
+            GameObject marketRoot = new("Market_Square");
+            marketRoot.transform.SetParent(root.transform);
 
-            PlacePrefab("Assets/ImportedAssets/VillageInteriorsKit/3DForge/Fantasy_Interiors/Villages_&_Towns/Prefabs/Props/Counters/fi_vil_counter01_01.prefab", "Merchant_Counter", new Vector3(0f, 0f, 1.1f), Quaternion.identity, Vector3.one, shopRoot.transform, woodMaterial);
-            PlacePrefab("Assets/ImportedAssets/VillageInteriorsKit/3DForge/Fantasy_Interiors/Villages_&_Towns/Prefabs/Props/Library/Bookshelves/fi_vil_library_bookshelf_02a.prefab", "Shop_Bookshelf", new Vector3(-2.3f, 0f, -1.6f), Quaternion.Euler(0f, 90f, 0f), Vector3.one, shopRoot.transform, woodMaterial);
-            PlacePrefab("Assets/ImportedAssets/VillageInteriorsKit/3DForge/Fantasy_Interiors/Villages_&_Towns/Prefabs/Props/Containers/Barrels/fi_vil_container_barrel_big_fruit.prefab", "Fruit_Barrel", new Vector3(2.1f, 0f, -1.4f), Quaternion.identity, Vector3.one, shopRoot.transform, woodMaterial);
-            PlacePrefab("Assets/ImportedAssets/VillageInteriorsKit/3DForge/Fantasy_Interiors/Villages_&_Towns/Prefabs/Props/Containers/Sacks/fi_vil_container_sack03_grain.prefab", "Grain_Sack", new Vector3(2.4f, 0f, 0.2f), Quaternion.Euler(0f, -20f, 0f), Vector3.one, shopRoot.transform, woodMaterial);
-            PlacePrefab("Assets/ImportedAssets/VillageInteriorsKit/3DForge/Fantasy_Interiors/Villages_&_Towns/Prefabs/Props/Food/fi_vil_food_bread03.prefab", "Counter_Bread", new Vector3(-0.7f, 1f, 1.2f), Quaternion.identity, Vector3.one, shopRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Gem_04.prefab", "Counter_Crystal", new Vector3(0.9f, 1f, 1.2f), Quaternion.identity, Vector3.one * 0.8f, shopRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/ImportedAssets/VillageInteriorsKit/3DForge/Fantasy_Interiors/Villages_&_Towns/Prefabs/Props/Lighting/Hanging/fi_vil_light_lamp04_02.prefab", "Shop_Lamp", new Vector3(0f, 2.5f, -0.8f), Quaternion.identity, Vector3.one, shopRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Crate_01.prefab", "Shop_Crate_Left", new Vector3(-2.25f, 0f, 0.45f), Quaternion.Euler(0f, 18f, 0f), Vector3.one * 0.85f, shopRoot.transform, woodMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Crate_01.prefab", "Shop_Crate_Right", new Vector3(2.35f, 0f, 1.15f), Quaternion.Euler(0f, -16f, 0f), Vector3.one * 0.75f, shopRoot.transform, woodMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Pouch_01.prefab", "Counter_Coin_Pouch", new Vector3(0.25f, 1.02f, 1.15f), Quaternion.Euler(0f, 25f, 0f), Vector3.one * 0.72f, shopRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Ingot_Gold_01.prefab", "Counter_Gold_Ingot", new Vector3(-0.2f, 1.04f, 1.15f), Quaternion.Euler(0f, -20f, 0f), Vector3.one * 0.7f, shopRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Parchment_01.prefab", "Counter_Parchment", new Vector3(1.25f, 1.03f, 1.08f), Quaternion.Euler(0f, 120f, 0f), Vector3.one * 0.72f, shopRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Goblet_01.prefab", "Counter_Goblet", new Vector3(-1.15f, 1.05f, 1.08f), Quaternion.Euler(0f, -40f, 0f), Vector3.one * 0.58f, shopRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Book_03.prefab", "Shop_Table_Book", new Vector3(-1.75f, 0.72f, -0.55f), Quaternion.Euler(0f, 30f, 0f), Vector3.one * 0.68f, shopRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Bottle_Clear_Labelled_02.prefab", "Shelf_Potion_Bottle", new Vector3(-2.42f, 1.35f, -1.3f), Quaternion.Euler(0f, 70f, 0f), Vector3.one * 0.72f, shopRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Jar_02.prefab", "Shelf_Jar_Goods", new Vector3(-2.35f, 0.78f, -1.85f), Quaternion.Euler(0f, 95f, 0f), Vector3.one * 0.75f, shopRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Ring_03.prefab", "Counter_Ring_Display", new Vector3(0.65f, 1.04f, 1.1f), Quaternion.Euler(0f, 20f, 0f), Vector3.one * 0.55f, shopRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Necklace_Flat_02.prefab", "Counter_Necklace_Display", new Vector3(0.02f, 1.05f, 0.86f), Quaternion.Euler(0f, -12f, 0f), Vector3.one * 0.6f, shopRoot.transform, fallbackMaterial);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Props/SM_Prop_Market_Stall_01.prefab", "Merchant_Stall", new Vector3(0f, 0f, 0.25f), Quaternion.Euler(0f, 180f, 0f), Vector3.one, marketRoot.transform, null);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Props/SM_Prop_Market_Stall_04.prefab", "Side_Stall_Left", new Vector3(-5.4f, 0f, 1.6f), Quaternion.Euler(0f, 135f, 0f), Vector3.one * 0.95f, marketRoot.transform, null);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Props/SM_Prop_Market_Stall_07.prefab", "Side_Stall_Right", new Vector3(5.6f, 0f, 0.8f), Quaternion.Euler(0f, 225f, 0f), Vector3.one * 0.95f, marketRoot.transform, null);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Props/Furniture/SM_Prop_Table_Wood_03.prefab", "Merchant_Display_Table", new Vector3(0f, 0f, 1.28f), Quaternion.Euler(0f, 180f, 0f), Vector3.one, marketRoot.transform, null);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Bottle_Clear_Labelled_02.prefab", "Display_Potion_Bottle", new Vector3(-0.55f, 0.86f, 1.22f), Quaternion.Euler(0f, 18f, 0f), Vector3.one * 0.58f, marketRoot.transform, null);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Gem_04.prefab", "Display_Crystal", new Vector3(0.16f, 0.86f, 1.2f), Quaternion.Euler(0f, -14f, 0f), Vector3.one * 0.62f, marketRoot.transform, null);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Pouch_01.prefab", "Display_Coin_Pouch", new Vector3(0.68f, 0.82f, 1.2f), Quaternion.Euler(0f, -35f, 0f), Vector3.one * 0.6f, marketRoot.transform, null);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Book_03.prefab", "Display_Ledger", new Vector3(-1.0f, 0.82f, 1.18f), Quaternion.Euler(0f, 28f, 0f), Vector3.one * 0.58f, marketRoot.transform, null);
 
-            GameObject villageRoot = new("Outside_Village");
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Props/SM_Prop_Crate_Stack_02.prefab", "Market_Crates_Left", new Vector3(-2.8f, 0f, 1.85f), Quaternion.Euler(0f, 20f, 0f), Vector3.one * 0.85f, marketRoot.transform, null);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Props/SM_Prop_Crate_Wood_01.prefab", "Market_Crate_Right", new Vector3(2.8f, 0f, 2.15f), Quaternion.Euler(0f, -18f, 0f), Vector3.one * 0.8f, marketRoot.transform, null);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Props/SM_Prop_Barrel_Stack_01.prefab", "Market_Barrels_Left", new Vector3(-3.55f, 0f, -0.45f), Quaternion.Euler(0f, 35f, 0f), Vector3.one * 0.9f, marketRoot.transform, null);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Jar_03.prefab", "Market_Jar_Right", new Vector3(3.55f, 0f, 0.15f), Quaternion.Euler(0f, -40f, 0f), Vector3.one * 0.85f, marketRoot.transform, null);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Props/SM_Prop_Well_01.prefab", "Village_Well", new Vector3(-6.8f, 0f, -4.2f), Quaternion.Euler(0f, 24f, 0f), Vector3.one, marketRoot.transform, null);
+
+            GameObject villageRoot = new("Village_Backdrop");
             villageRoot.transform.SetParent(root.transform);
-            PlacePrefab("Assets/ImportedAssets/PBMedievalVillages1/3DForge/Blueprints/PremiumBlueprints/PB_VEK/MedievalVillages1/BLUEPRINTS/MedVil_Shops/PB_MedVil_Shop01.prefab", "Village_Shop_01", new Vector3(-8f, 0f, 11f), Quaternion.Euler(0f, 35f, 0f), Vector3.one, villageRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/ImportedAssets/PBMedievalVillages1/3DForge/Blueprints/PremiumBlueprints/PB_VEK/MedievalVillages1/BLUEPRINTS/MedVil_Markets/PB_MedVil_Market01.prefab", "Village_Market_01", new Vector3(7f, 0f, 11f), Quaternion.Euler(0f, -25f, 0f), Vector3.one, villageRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Buildings/Preset_Houses/SM_Bld_Preset_Tavern_01_Optimized.prefab", "Village_Tavern", new Vector3(0f, 0f, 17f), Quaternion.Euler(0f, 180f, 0f), Vector3.one, villageRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Props/SM_Prop_Market_Stall_01.prefab", "Village_Stall_01", new Vector3(-2.5f, 0f, 7.3f), Quaternion.Euler(0f, 160f, 0f), Vector3.one, villageRoot.transform, fallbackMaterial);
-            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Props/SM_Prop_Market_Stall_04.prefab", "Village_Stall_02", new Vector3(2.5f, 0f, 7.1f), Quaternion.Euler(0f, 200f, 0f), Vector3.one, villageRoot.transform, fallbackMaterial);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Buildings/Preset_Houses/SM_Bld_Preset_Tavern_01_Optimized.prefab", "Village_Tavern", new Vector3(0f, 0f, -14.5f), Quaternion.Euler(0f, 0f, 0f), Vector3.one * 1.12f, villageRoot.transform, null);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Buildings/Preset_Houses/SM_Bld_Preset_Blacksmith_01_Optimized.prefab", "Village_Blacksmith", new Vector3(12f, 0f, -6.5f), Quaternion.Euler(0f, -35f, 0f), Vector3.one, villageRoot.transform, null);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Buildings/Preset_Houses/SM_Bld_Preset_House_05_Optimized.prefab", "Village_House_Left", new Vector3(-12f, 0f, -6.8f), Quaternion.Euler(0f, 35f, 0f), Vector3.one, villageRoot.transform, null);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Buildings/Preset_Houses/SM_Bld_Preset_House_08_Optimized.prefab", "Village_House_Right", new Vector3(13.5f, 0f, 7.2f), Quaternion.Euler(0f, -115f, 0f), Vector3.one * 0.95f, villageRoot.transform, null);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Buildings/Preset_Houses/SM_Bld_Preset_Stables_01_Optimized.prefab", "Village_Stables", new Vector3(-12.5f, 0f, 8.5f), Quaternion.Euler(0f, 130f, 0f), Vector3.one, villageRoot.transform, null);
         }
 
         private static GameObject CreatePlayer(Transform cameraTransform)
         {
-            GameObject player = PlacePrefab("Assets/ImportedAssets/FantasyAnimatedCharacters/Fantasy animated characters pack/Peasant animated character/Prefab/Peasant.prefab", "Player_Adventurer", new Vector3(0f, 0.2f, 6f), Quaternion.Euler(0f, 180f, 0f), Vector3.one, null, null);
+            GameObject player = PlacePrefab("Assets/ImportedAssets/FantasyAnimatedCharacters/Fantasy animated characters pack/Peasant animated character/Prefab/Peasant.prefab", "Player_Adventurer", new Vector3(0f, 0.2f, 5.4f), Quaternion.Euler(0f, 180f, 0f), Vector3.one, null, null);
             player.tag = "Player";
 
             Rigidbody rigidbody = player.GetComponent<Rigidbody>();
@@ -219,7 +208,7 @@ namespace DiaToMas.Editor
 
         private static void CreateMerchant(ShopPresenter shopPresenter)
         {
-            GameObject merchant = PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Characters/SM_Chr_Merchant_01.prefab", "Merchant", new Vector3(0f, 0f, 0.25f), Quaternion.Euler(0f, 180f, 0f), Vector3.one, null, null);
+            GameObject merchant = PlacePrefab("Assets/ImportedAssets/FantasyAnimatedCharacters/Fantasy animated characters pack/Mage animated character/Prefab/Mage.prefab", "Merchant", new Vector3(0f, 0f, -0.95f), Quaternion.identity, Vector3.one, null, null);
             CapsuleCollider trigger = merchant.GetComponent<CapsuleCollider>();
             if (trigger == null)
             {
@@ -230,6 +219,15 @@ namespace DiaToMas.Editor
             trigger.radius = 2.2f;
             trigger.center = Vector3.up;
             trigger.isTrigger = true;
+
+            NpcIdleAnimatorView idleAnimatorView = merchant.GetComponent<NpcIdleAnimatorView>();
+            if (idleAnimatorView == null)
+            {
+                idleAnimatorView = merchant.AddComponent<NpcIdleAnimatorView>();
+            }
+
+            SetObject(idleAnimatorView, "_animator", merchant.GetComponentInChildren<Animator>());
+            SetString(idleAnimatorView, "_idleStateName", "Mage_Idle");
 
             ShopInteractable interactable = merchant.GetComponent<ShopInteractable>();
             if (interactable == null)
@@ -244,11 +242,11 @@ namespace DiaToMas.Editor
             GameObject cameraObject = new("ThirdPersonCamera");
             Camera camera = cameraObject.AddComponent<Camera>();
             camera.tag = "MainCamera";
-            camera.fieldOfView = 58f;
+            camera.fieldOfView = 54f;
             camera.nearClipPlane = 0.08f;
             camera.farClipPlane = 200f;
-            camera.transform.position = new Vector3(0f, 4.5f, -7f);
-            camera.transform.rotation = Quaternion.Euler(28f, 0f, 0f);
+            camera.transform.position = new Vector3(0f, 4.3f, 11.2f);
+            camera.transform.rotation = Quaternion.Euler(24f, 180f, 0f);
             cameraObject.AddComponent<AudioListener>();
             cameraObject.AddComponent<ThirdPersonCameraFollow>();
             return camera;
@@ -263,12 +261,12 @@ namespace DiaToMas.Editor
             light.intensity = 1.1f;
 
             GameObject shopLightObject = new("Shop Warm Light");
-            shopLightObject.transform.position = new Vector3(0f, 3.2f, -0.5f);
+            shopLightObject.transform.position = new Vector3(0f, 4.2f, 0.4f);
             Light shopLight = shopLightObject.AddComponent<Light>();
             shopLight.type = LightType.Point;
             shopLight.color = new Color(1f, 0.75f, 0.45f);
-            shopLight.intensity = 2.4f;
-            shopLight.range = 8f;
+            shopLight.intensity = 1.7f;
+            shopLight.range = 10f;
         }
 
         private static ShopPresenter CreateShopCanvas(ShopItemButtonView itemRowPrefab, InventoryItemRowView inventoryRowPrefab)
@@ -276,58 +274,50 @@ namespace DiaToMas.Editor
             GameObject canvasObject = new("ShopCanvas");
             Canvas canvas = canvasObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvasObject.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            CanvasScaler canvasScaler = canvasObject.AddComponent<CanvasScaler>();
+            canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            canvasScaler.referenceResolution = new Vector2(1600f, 900f);
+            canvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            canvasScaler.matchWidthOrHeight = 0.5f;
             canvasObject.AddComponent<GraphicRaycaster>();
 
-            GameObject promptObject = CreateText("PromptText", canvasObject.transform, "상인과 거래: E 또는 좌클릭", 28, TextAnchor.MiddleCenter, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 62f), new Vector2(680f, 48f)).gameObject;
+            GameObject promptObject = CreateText("PromptText", canvasObject.transform, "상인과 거래: E 또는 좌클릭", 26, TextAnchor.MiddleCenter, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 58f), new Vector2(620f, 44f)).gameObject;
             promptObject.SetActive(false);
 
-            GameObject panel = CreatePanel("ShopPanel", canvasObject.transform, new Color(0.08f, 0.065f, 0.045f, 0.94f), new Vector2(0.5f, 0.5f), new Vector2(980f, 620f));
+            GameObject panel = CreatePanel("ShopPanel", canvasObject.transform, new Color(0.08f, 0.065f, 0.045f, 0.94f), new Vector2(0.5f, 0.5f), new Vector2(900f, 560f));
             ApplyImageSprite(panel, PanelFrameSpritePath, Image.Type.Sliced);
-            GameObject titleFrame = CreatePanel("TitleFrame", panel.transform, new Color(0.33f, 0.18f, 0.08f, 0.72f), new Vector2(0.5f, 1f), new Vector2(880f, 56f));
+            GameObject titleFrame = CreatePanel("TitleFrame", panel.transform, new Color(0.33f, 0.18f, 0.08f, 0.72f), new Vector2(0.5f, 1f), new Vector2(790f, 50f));
             RectTransform titleFrameRect = titleFrame.GetComponent<RectTransform>();
             titleFrameRect.anchorMin = new Vector2(0.5f, 1f);
             titleFrameRect.anchorMax = new Vector2(0.5f, 1f);
-            titleFrameRect.anchoredPosition = new Vector2(0f, -40f);
+            titleFrameRect.anchoredPosition = new Vector2(-24f, -34f);
             ApplyImageSprite(titleFrame, ListFrameSpritePath, Image.Type.Sliced);
-            Text titleText = CreateText("TitleText", panel.transform, "신더킵 상점", 31, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -38f), new Vector2(-70f, 54f));
+            Text titleText = CreateText("TitleText", panel.transform, "신더킵 시장 상점", 29, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(4f, -34f), new Vector2(-116f, 50f));
             titleText.color = new Color(1f, 0.86f, 0.56f);
 
-            CreateImage("GoldIcon", panel.transform, GoldIconSpritePath, new Color(1f, 0.82f, 0.3f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(52f, -88f), new Vector2(26f, 26f));
-            CreateImage("CrystalIcon", panel.transform, CrystalIconSpritePath, new Color(0.48f, 0.9f, 1f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(84f, -88f), new Vector2(26f, 26f));
-            Text walletText = CreateText("WalletText", panel.transform, string.Empty, 19, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(44f, -88f), new Vector2(-150f, 34f));
-            Text quantityText = CreateText("QuantityText", panel.transform, "수량: 1", 18, TextAnchor.MiddleRight, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-150f, -88f), new Vector2(220f, 34f));
+            CreateImage("GoldIcon", panel.transform, GoldIconSpritePath, new Color(1f, 0.82f, 0.3f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(44f, -78f), new Vector2(24f, 24f));
+            CreateImage("CrystalIcon", panel.transform, CrystalIconSpritePath, new Color(0.48f, 0.9f, 1f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(72f, -78f), new Vector2(24f, 24f));
+            Text walletText = CreateText("WalletText", panel.transform, string.Empty, 18, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(44f, -78f), new Vector2(-150f, 32f));
+            Text quantityText = CreateText("QuantityText", panel.transform, "수량: 1", 17, TextAnchor.MiddleRight, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-136f, -78f), new Vector2(210f, 32f));
 
-            CreateText("ShopHeaderText", panel.transform, "상점 물품", 22, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(258f, -128f), new Vector2(420f, 32f));
-            Transform itemRoot = CreatePanel("ItemRoot", panel.transform, new Color(0.12f, 0.1f, 0.075f, 0.82f), new Vector2(0f, 1f), new Vector2(520f, 350f)).transform;
-            ApplyImageSprite(itemRoot.gameObject, ListFrameSpritePath, Image.Type.Sliced);
-            RectTransform itemRootRect = itemRoot.GetComponent<RectTransform>();
-            itemRootRect.anchorMin = new Vector2(0f, 1f);
-            itemRootRect.anchorMax = new Vector2(0f, 1f);
-            itemRootRect.anchoredPosition = new Vector2(40f, -168f);
-            AddVerticalLayout(itemRoot.gameObject, new RectOffset(10, 10, 10, 10), 8f);
+            CreateText("ShopHeaderText", panel.transform, "상점 상품", 21, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(238f, -118f), new Vector2(390f, 30f));
+            Transform itemRoot = CreateScrollContent("ItemScrollFrame", panel.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(236f, -290f), new Vector2(410f, 310f));
 
-            Text inventoryText = CreateText("InventoryText", panel.transform, "인벤토리: 비어 있음", 22, TextAnchor.MiddleLeft, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-248f, -128f), new Vector2(390f, 32f));
-            Transform inventoryRoot = CreatePanel("InventoryRoot", panel.transform, new Color(0.105f, 0.09f, 0.07f, 0.82f), new Vector2(1f, 1f), new Vector2(360f, 350f)).transform;
-            ApplyImageSprite(inventoryRoot.gameObject, ListFrameSpritePath, Image.Type.Sliced);
-            RectTransform inventoryRootRect = inventoryRoot.GetComponent<RectTransform>();
-            inventoryRootRect.anchorMin = new Vector2(1f, 1f);
-            inventoryRootRect.anchorMax = new Vector2(1f, 1f);
-            inventoryRootRect.anchoredPosition = new Vector2(-40f, -168f);
-            AddVerticalLayout(inventoryRoot.gameObject, new RectOffset(10, 10, 10, 10), 8f);
+            Text inventoryText = CreateText("InventoryText", panel.transform, "내 인벤토리", 21, TextAnchor.MiddleLeft, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-224f, -118f), new Vector2(390f, 30f));
+            Transform inventoryRoot = CreateScrollContent("InventoryScrollFrame", panel.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-236f, -290f), new Vector2(410f, 310f));
 
-            Text feedbackText = CreateText("FeedbackText", panel.transform, string.Empty, 20, TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 54f), new Vector2(-70f, 36f));
+            Text feedbackText = CreateText("FeedbackText", panel.transform, string.Empty, 18, TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 74f), new Vector2(-92f, 34f));
             feedbackText.color = new Color(1f, 0.78f, 0.42f);
-            GameObject dismantleDropZone = CreatePanel("DismantleDropZone", panel.transform, new Color(0.24f, 0.13f, 0.1f, 0.92f), new Vector2(0.5f, 0f), new Vector2(300f, 42f));
+            GameObject dismantleDropZone = CreatePanel("DismantleDropZone", panel.transform, new Color(0.24f, 0.13f, 0.1f, 0.92f), new Vector2(0.5f, 0f), new Vector2(280f, 38f));
             ApplyImageSprite(dismantleDropZone, RowFrameSpritePath, Image.Type.Sliced);
             RectTransform dismantleDropZoneRect = dismantleDropZone.GetComponent<RectTransform>();
             dismantleDropZoneRect.anchorMin = new Vector2(0.5f, 0f);
             dismantleDropZoneRect.anchorMax = new Vector2(0.5f, 0f);
-            dismantleDropZoneRect.anchoredPosition = new Vector2(0f, 22f);
+            dismantleDropZoneRect.anchoredPosition = new Vector2(0f, 36f);
             CreateText("DropZoneText", dismantleDropZone.transform, "드래그해서 분해", 16, TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             dismantleDropZone.AddComponent<DismantleDropZone>();
 
-            Button closeButton = CreateButton("CloseButton", panel.transform, "닫기", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-84f, -36f), new Vector2(120f, 42f));
+            Button closeButton = CreateButton("CloseButton", panel.transform, "닫기", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-70f, -34f), new Vector2(96f, 36f));
             ShopQuantitySelector quantitySelector = panel.AddComponent<ShopQuantitySelector>();
             SetObject(quantitySelector, "_quantityText", quantityText);
 
@@ -351,14 +341,15 @@ namespace DiaToMas.Editor
 
         private static ShopItemButtonView CreateShopItemRowPrefab()
         {
-            GameObject row = CreatePanel("ShopItemRow", null, new Color(0.18f, 0.145f, 0.1f, 0.96f), new Vector2(0.5f, 0.5f), new Vector2(500f, 78f));
+            GameObject row = CreatePanel("ShopItemRow", null, new Color(0.18f, 0.145f, 0.1f, 0.96f), new Vector2(0.5f, 0.5f), new Vector2(386f, 76f));
+            AddLayoutElement(row, 386f, 76f);
             ApplyImageSprite(row, RowFrameSpritePath, Image.Type.Sliced);
-            Image iconImage = CreateImage("IconImage", row.transform, DefaultItemIconSpritePath, Color.white, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(46f, 0f), new Vector2(44f, 44f));
-            Text nameText = CreateText("NameText", row.transform, "아이템", 18, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(112f, -18f), new Vector2(210f, 24f));
-            Text descriptionText = CreateText("DescriptionText", row.transform, "설명", 13, TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(204f, 22f), new Vector2(340f, 24f));
-            Text priceText = CreateText("PriceText", row.transform, "0 골드", 15, TextAnchor.MiddleRight, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-152f, -20f), new Vector2(120f, 26f));
-            Text stockText = CreateText("StockText", row.transform, "재고 0", 13, TextAnchor.MiddleRight, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-152f, 22f), new Vector2(120f, 22f));
-            Button buyButton = CreateButton("BuyButton", row.transform, "구매", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-48f, 0f), new Vector2(74f, 34f));
+            Image iconImage = CreateImage("IconImage", row.transform, DefaultItemIconSpritePath, Color.white, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(42f, 0f), new Vector2(42f, 42f));
+            Text nameText = CreateText("NameText", row.transform, "아이템", 17, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(92f, -18f), new Vector2(180f, 22f));
+            Text descriptionText = CreateText("DescriptionText", row.transform, "설명", 12, TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(176f, 21f), new Vector2(240f, 22f));
+            Text priceText = CreateText("PriceText", row.transform, "0 골드", 14, TextAnchor.MiddleRight, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-116f, -20f), new Vector2(90f, 24f));
+            Text stockText = CreateText("StockText", row.transform, "재고 0", 12, TextAnchor.MiddleRight, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-116f, 21f), new Vector2(90f, 22f));
+            Button buyButton = CreateButton("BuyButton", row.transform, "구매", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-40f, 0f), new Vector2(64f, 32f));
 
             ShopItemButtonView buttonView = row.AddComponent<ShopItemButtonView>();
             SetObject(buttonView, "_nameText", nameText);
@@ -375,14 +366,15 @@ namespace DiaToMas.Editor
 
         private static InventoryItemRowView CreateInventoryItemRowPrefab()
         {
-            GameObject row = CreatePanel("InventoryItemRow", null, new Color(0.17f, 0.135f, 0.095f, 0.96f), new Vector2(0.5f, 0.5f), new Vector2(340f, 58f));
+            GameObject row = CreatePanel("InventoryItemRow", null, new Color(0.17f, 0.135f, 0.095f, 0.96f), new Vector2(0.5f, 0.5f), new Vector2(386f, 66f));
+            AddLayoutElement(row, 386f, 66f);
             ApplyImageSprite(row, RowFrameSpritePath, Image.Type.Sliced);
             Image iconImage = CreateImage("IconImage", row.transform, DefaultItemIconSpritePath, Color.white, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(34f, 0f), new Vector2(38f, 38f));
-            Text nameText = CreateText("NameText", row.transform, "아이템", 17, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(86f, 10f), new Vector2(160f, 24f));
-            Text amountText = CreateText("AmountText", row.transform, "x0", 15, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(86f, -12f), new Vector2(70f, 22f));
-            Text sellPriceText = CreateText("SellPriceText", row.transform, "0 골드", 14, TextAnchor.MiddleRight, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-142f, 0f), new Vector2(88f, 24f));
-            Button sellButton = CreateButton("SellButton", row.transform, "판매", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-72f, 0f), new Vector2(58f, 32f));
-            Button dismantleButton = CreateButton("DismantleButton", row.transform, "분해", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-25f, 0f), new Vector2(58f, 32f));
+            Text nameText = CreateText("NameText", row.transform, "아이템", 16, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(78f, 10f), new Vector2(132f, 22f));
+            Text amountText = CreateText("AmountText", row.transform, "x0", 14, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(78f, -12f), new Vector2(62f, 20f));
+            Text sellPriceText = CreateText("SellPriceText", row.transform, "0 골드", 13, TextAnchor.MiddleRight, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-158f, 0f), new Vector2(78f, 22f));
+            Button sellButton = CreateButton("SellButton", row.transform, "판매", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-88f, 0f), new Vector2(54f, 30f));
+            Button dismantleButton = CreateButton("DismantleButton", row.transform, "분해", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-30f, 0f), new Vector2(54f, 30f));
 
             InventoryItemRowView rowView = row.AddComponent<InventoryItemRowView>();
             SetObject(rowView, "_nameText", nameText);
@@ -432,7 +424,7 @@ namespace DiaToMas.Editor
         {
             WorldItemPickup pickup = (WorldItemPickup)PrefabUtility.InstantiatePrefab(pickupPrefab);
             pickup.name = "WorldPickup_WolfPelt";
-            pickup.transform.SetPositionAndRotation(new Vector3(1.7f, 0.35f, 5.2f), Quaternion.identity);
+            pickup.transform.SetPositionAndRotation(new Vector3(1.9f, 0.35f, 4.15f), Quaternion.Euler(0f, 25f, 0f));
             pickup.Setup("wolf_pelt", 1);
         }
 
@@ -461,6 +453,29 @@ namespace DiaToMas.Editor
             }
 
             return instance;
+        }
+
+        private static GameObject CreateGroundPlane(string name, Transform parent, Material material, Vector3 position, Vector3 scale, bool hasCollider)
+        {
+            GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            ground.name = name;
+            ground.transform.SetParent(parent);
+            ground.transform.position = position;
+            ground.transform.localScale = scale;
+
+            Renderer renderer = ground.GetComponent<Renderer>();
+            renderer.sharedMaterial = material;
+
+            if (!hasCollider)
+            {
+                Collider collider = ground.GetComponent<Collider>();
+                if (collider != null)
+                {
+                    Object.DestroyImmediate(collider);
+                }
+            }
+
+            return ground;
         }
 
         private static void ApplyFallbackMaterial(GameObject root, Material fallbackMaterial)
@@ -510,6 +525,29 @@ namespace DiaToMas.Editor
             return material;
         }
 
+        private static Material CreateTexturedMaterial(string materialName, string texturePath, Color fallbackColor, Vector2 textureScale)
+        {
+            string path = $"Assets/Materials/{materialName}.mat";
+            Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (material == null)
+            {
+                Shader shader = Shader.Find("Standard") ?? Shader.Find("Diffuse");
+                material = new Material(shader);
+                AssetDatabase.CreateAsset(material, path);
+            }
+
+            material.color = fallbackColor;
+            Texture2D texture = Load<Texture2D>(texturePath);
+            if (texture != null)
+            {
+                material.mainTexture = texture;
+                material.mainTextureScale = textureScale;
+            }
+
+            EditorUtility.SetDirty(material);
+            return material;
+        }
+
         private static GameObject CreatePanel(string name, Transform parent, Color color, Vector2 pivot, Vector2 size)
         {
             GameObject panel = new(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
@@ -534,6 +572,47 @@ namespace DiaToMas.Editor
             image.raycastTarget = false;
             ApplyImageSprite(imageObject, spritePath, Image.Type.Simple);
             return image;
+        }
+
+        private static Transform CreateScrollContent(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta)
+        {
+            GameObject frame = CreatePanel(name, parent, new Color(0.105f, 0.09f, 0.07f, 0.86f), new Vector2(0.5f, 0.5f), sizeDelta);
+            RectTransform frameRect = frame.GetComponent<RectTransform>();
+            frameRect.anchorMin = anchorMin;
+            frameRect.anchorMax = anchorMax;
+            frameRect.anchoredPosition = anchoredPosition;
+            ApplyImageSprite(frame, ListFrameSpritePath, Image.Type.Sliced);
+
+            ScrollRect scrollRect = frame.AddComponent<ScrollRect>();
+            scrollRect.horizontal = false;
+            scrollRect.vertical = true;
+            scrollRect.movementType = ScrollRect.MovementType.Clamped;
+
+            GameObject viewport = CreatePanel("Viewport", frame.transform, new Color(0f, 0f, 0f, 0f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            RectTransform viewportRect = viewport.GetComponent<RectTransform>();
+            viewportRect.anchorMin = Vector2.zero;
+            viewportRect.anchorMax = Vector2.one;
+            viewportRect.offsetMin = new Vector2(10f, 10f);
+            viewportRect.offsetMax = new Vector2(-10f, -10f);
+            viewport.AddComponent<RectMask2D>();
+
+            GameObject content = new("Content", typeof(RectTransform));
+            content.transform.SetParent(viewport.transform, false);
+            RectTransform contentRect = content.GetComponent<RectTransform>();
+            contentRect.anchorMin = new Vector2(0f, 1f);
+            contentRect.anchorMax = new Vector2(1f, 1f);
+            contentRect.pivot = new Vector2(0.5f, 1f);
+            contentRect.anchoredPosition = Vector2.zero;
+            contentRect.sizeDelta = Vector2.zero;
+
+            AddVerticalLayout(content, new RectOffset(2, 2, 2, 2), 8f);
+            ContentSizeFitter sizeFitter = content.AddComponent<ContentSizeFitter>();
+            sizeFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            scrollRect.viewport = viewportRect;
+            scrollRect.content = contentRect;
+            return content.transform;
         }
 
         private static Text CreateText(string name, Transform parent, string text, int fontSize, TextAnchor alignment, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta)
@@ -603,8 +682,17 @@ namespace DiaToMas.Editor
             layoutGroup.childControlHeight = false;
             layoutGroup.childControlWidth = true;
             layoutGroup.childForceExpandHeight = false;
+            layoutGroup.childForceExpandWidth = true;
             layoutGroup.spacing = spacing;
             layoutGroup.padding = padding;
+        }
+
+        private static void AddLayoutElement(GameObject target, float preferredWidth, float preferredHeight)
+        {
+            LayoutElement layoutElement = target.AddComponent<LayoutElement>();
+            layoutElement.preferredWidth = preferredWidth;
+            layoutElement.preferredHeight = preferredHeight;
+            layoutElement.minHeight = preferredHeight;
         }
 
         private static T Load<T>(string assetPath) where T : Object

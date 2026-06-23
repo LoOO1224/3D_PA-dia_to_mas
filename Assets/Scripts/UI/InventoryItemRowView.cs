@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace DiaToMas.UI
 {
-    public class InventoryItemRowView : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public class InventoryItemRowView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         [SerializeField] private Text _nameText;
         [SerializeField] private Text _amountText;
@@ -47,15 +47,6 @@ namespace DiaToMas.UI
             _sellButton.interactable = amount > 0;
             _dismantleButton.interactable = amount > 0;
             ItemIconLoader.Apply(_iconImage, itemData);
-            SetActionButtonsVisible(false);
-        }
-
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            if (eventData.button == PointerEventData.InputButton.Right)
-            {
-                SetActionButtonsVisible(!_sellButton.gameObject.activeSelf);
-            }
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -87,12 +78,6 @@ namespace DiaToMas.UI
         private void Dismantle()
         {
             _onDismantle?.Invoke(_itemData);
-        }
-
-        private void SetActionButtonsVisible(bool isVisible)
-        {
-            _sellButton.gameObject.SetActive(isVisible);
-            _dismantleButton.gameObject.SetActive(isVisible);
         }
     }
 }
