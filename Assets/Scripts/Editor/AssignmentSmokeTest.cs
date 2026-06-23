@@ -58,6 +58,7 @@ namespace DiaToMas.Editor
 
             GameObject pickup = RequireGameObject("WorldPickup_WolfPelt");
             RequireComponent<WorldItemPickup>(pickup);
+            RequireComponent<WorldItemHoverHighlightView>(pickup);
 
             GameObject cameraObject = RequireGameObject("ThirdPersonCamera");
             RequireComponent<Camera>(cameraObject);
@@ -88,6 +89,8 @@ namespace DiaToMas.Editor
         {
             ShopPresenter presenter = UnityEngine.Object.FindFirstObjectByType<ShopPresenter>();
             Require(presenter != null, "Scene needs a ShopPresenter.");
+            PlayerInventoryPresenter playerInventoryPresenter = UnityEngine.Object.FindFirstObjectByType<PlayerInventoryPresenter>();
+            Require(playerInventoryPresenter != null, "Scene needs a PlayerInventoryPresenter.");
 
             RequireReference(presenter, "_rootObject");
             RequireReference(presenter, "_itemRoot");
@@ -100,9 +103,16 @@ namespace DiaToMas.Editor
             RequireReference(presenter, "_promptText");
             RequireReference(presenter, "_closeButton");
             RequireReference(presenter, "_quantitySelector");
+            RequireReference(playerInventoryPresenter, "_rootObject");
+            RequireReference(playerInventoryPresenter, "_inventoryRoot");
+            RequireReference(playerInventoryPresenter, "_inventoryItemRowPrefab");
+            RequireReference(playerInventoryPresenter, "_walletText");
+            RequireReference(playerInventoryPresenter, "_feedbackText");
+            RequireReference(playerInventoryPresenter, "_closeButton");
 
             RequirePrefabComponent<ShopItemButtonView>("Assets/Prefabs/UI/ShopItemButtonView.prefab");
             RequirePrefabComponent<InventoryItemRowView>("Assets/Prefabs/UI/InventoryItemRowView.prefab");
+            RequirePrefabComponent<WorldItemHoverHighlightView>("Assets/Prefabs/World/WorldItemPickup.prefab");
         }
 
         private static void ValidateTransactionFlow()

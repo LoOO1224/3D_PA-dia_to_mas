@@ -23,8 +23,15 @@ namespace DiaToMas.UI
 
         private void Awake()
         {
-            _sellButton.onClick.AddListener(Sell);
-            _dismantleButton.onClick.AddListener(Dismantle);
+            if (_sellButton != null)
+            {
+                _sellButton.onClick.AddListener(Sell);
+            }
+
+            if (_dismantleButton != null)
+            {
+                _dismantleButton.onClick.AddListener(Dismantle);
+            }
         }
 
         public void Setup(
@@ -43,9 +50,11 @@ namespace DiaToMas.UI
 
             _nameText.text = itemData.displayName;
             _amountText.text = $"x{amount}";
-            _sellPriceText.text = $"{sellAmount} {currencyName}";
-            _sellButton.interactable = amount > 0;
-            _dismantleButton.interactable = amount > 0;
+            _sellPriceText.text = sellAmount > 0 ? $"{sellAmount} {currencyName}" : currencyName;
+            SetButtonVisible(_sellButton, onSell != null);
+            SetButtonVisible(_dismantleButton, onDismantle != null);
+            SetButtonInteractable(_sellButton, amount > 0 && onSell != null);
+            SetButtonInteractable(_dismantleButton, amount > 0 && onDismantle != null);
             ItemIconLoader.Apply(_iconImage, itemData);
         }
 
@@ -78,6 +87,22 @@ namespace DiaToMas.UI
         private void Dismantle()
         {
             _onDismantle?.Invoke(_itemData);
+        }
+
+        private static void SetButtonVisible(Button button, bool isVisible)
+        {
+            if (button != null)
+            {
+                button.gameObject.SetActive(isVisible);
+            }
+        }
+
+        private static void SetButtonInteractable(Button button, bool isInteractable)
+        {
+            if (button != null)
+            {
+                button.interactable = isInteractable;
+            }
         }
     }
 }

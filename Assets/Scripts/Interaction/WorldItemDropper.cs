@@ -14,7 +14,7 @@ namespace DiaToMas.Interaction
         {
             if (itemData == null || GameManager.Inst == null || _pickupPrefab == null)
             {
-                message = "드롭 정보를 확인할 수 없습니다.";
+                message = "드롭할 아이템 정보를 확인할 수 없습니다.";
                 return false;
             }
 

@@ -62,6 +62,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1624953783224470, guid: 45879a9296a948147b133a12268a8240, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7714683655403352314}
+    - targetCorrespondingSourceObject: {fileID: 1624953783224470, guid: 45879a9296a948147b133a12268a8240, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1567774205788926161}
   m_SourcePrefab: {fileID: 100100000, guid: 45879a9296a948147b133a12268a8240, type: 3}
 --- !u!1 &1463663322187444179 stripped
 GameObject:
@@ -103,3 +106,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DiaToMas.Interaction.WorldItemPickup
   _itemId: wolf_pelt
   _amount: 1
+--- !u!114 &1567774205788926161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1463663322187444179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12f096670cee89f47a17c361ff2317d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DiaToMas.Interaction.WorldItemHoverHighlightView
+  _hoverColor: {r: 1, g: 0.78, b: 0.34, a: 1}

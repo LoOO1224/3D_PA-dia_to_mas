@@ -41,6 +41,11 @@ namespace DiaToMas.Interaction
             }
         }
 
+        public void Interact(GameObject interactor)
+        {
+            _shopPresenter?.Open();
+        }
+
         private void TryOpenShop()
         {
             if (_currentInputReader == null || !_currentInputReader.ConsumeInteract())
@@ -49,11 +54,6 @@ namespace DiaToMas.Interaction
             }
 
             Interact(_currentInputReader.gameObject);
-        }
-
-        public void Interact(GameObject interactor)
-        {
-            _shopPresenter?.Open();
         }
     }
 }

@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace DiaToMas.Editor
@@ -73,16 +74,61 @@ namespace DiaToMas.Editor
             AssetDatabase.SaveAssets();
         }
 
+        [MenuItem("Tools/DiaToMas/Rebuild Assignment Presentation")]
+        public static void RebuildAssignmentPresentation()
+        {
+            EditorSceneManager.OpenScene(ScenePath);
+
+            ShopItemButtonView itemRowPrefab = CreateShopItemRowPrefab();
+            InventoryItemRowView inventoryRowPrefab = CreateInventoryItemRowPrefab();
+            WorldItemPickup pickupPrefab = CreateWorldItemPickupPrefab();
+
+            DestroyRootObject("ShopCanvas");
+            DestroyRootObject("EventSystem");
+
+            ShopPresenter shopPresenter = CreateShopCanvas(itemRowPrefab, inventoryRowPrefab);
+            ConnectShopPresenter(shopPresenter);
+            ConnectWorldItemDropper(pickupPrefab);
+            ApplySunnyMarketLighting();
+
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+            AssetDatabase.SaveAssets();
+        }
+
         private static void RemoveGeneratedObjects()
         {
             foreach (string rootName in BuildRootNames)
             {
-                GameObject target = GameObject.Find(rootName);
-                while (target != null)
-                {
-                    Object.DestroyImmediate(target);
-                    target = GameObject.Find(rootName);
-                }
+                DestroyRootObject(rootName);
+            }
+        }
+
+        private static void DestroyRootObject(string rootName)
+        {
+            GameObject target = GameObject.Find(rootName);
+            while (target != null)
+            {
+                Object.DestroyImmediate(target);
+                target = GameObject.Find(rootName);
+            }
+        }
+
+        private static void ConnectShopPresenter(ShopPresenter shopPresenter)
+        {
+            ShopInteractable[] shopInteractables = Object.FindObjectsByType<ShopInteractable>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            foreach (ShopInteractable shopInteractable in shopInteractables)
+            {
+                SetObject(shopInteractable, "_shopPresenter", shopPresenter);
+            }
+        }
+
+        private static void ConnectWorldItemDropper(WorldItemPickup pickupPrefab)
+        {
+            WorldItemDropper[] itemDroppers = Object.FindObjectsByType<WorldItemDropper>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            foreach (WorldItemDropper itemDropper in itemDroppers)
+            {
+                SetObject(itemDropper, "_pickupPrefab", pickupPrefab);
             }
         }
 
@@ -267,6 +313,48 @@ namespace DiaToMas.Editor
             shopLight.color = new Color(1f, 0.75f, 0.45f);
             shopLight.intensity = 1.7f;
             shopLight.range = 10f;
+            ApplySunnyMarketLighting();
+        }
+
+        private static void ApplySunnyMarketLighting()
+        {
+            RenderSettings.skybox = CreateSunnySkyboxMaterial();
+            RenderSettings.ambientMode = AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor = new Color(0.76f, 0.86f, 0.96f);
+            RenderSettings.ambientEquatorColor = new Color(0.83f, 0.75f, 0.61f);
+            RenderSettings.ambientGroundColor = new Color(0.46f, 0.39f, 0.29f);
+            RenderSettings.fog = true;
+            RenderSettings.fogColor = new Color(0.78f, 0.88f, 0.96f);
+            RenderSettings.fogDensity = 0.006f;
+
+            Light sunLight = FindOrCreateLight("Sun Light", LightType.Directional);
+            sunLight.transform.rotation = Quaternion.Euler(48f, -42f, 0f);
+            sunLight.color = new Color(1f, 0.88f, 0.66f);
+            sunLight.intensity = 1.28f;
+
+            Light marketLight = FindOrCreateLight("Shop Warm Light", LightType.Point);
+            marketLight.transform.position = new Vector3(0f, 4.2f, 0.4f);
+            marketLight.color = new Color(1f, 0.78f, 0.48f);
+            marketLight.intensity = 1.15f;
+            marketLight.range = 11f;
+        }
+
+        private static Light FindOrCreateLight(string objectName, LightType lightType)
+        {
+            GameObject lightObject = GameObject.Find(objectName);
+            if (lightObject == null)
+            {
+                lightObject = new GameObject(objectName);
+            }
+
+            Light light = lightObject.GetComponent<Light>();
+            if (light == null)
+            {
+                light = lightObject.AddComponent<Light>();
+            }
+
+            light.type = lightType;
+            return light;
         }
 
         private static ShopPresenter CreateShopCanvas(ShopItemButtonView itemRowPrefab, InventoryItemRowView inventoryRowPrefab)
@@ -284,9 +372,9 @@ namespace DiaToMas.Editor
             GameObject promptObject = CreateText("PromptText", canvasObject.transform, "상인과 거래: E 또는 좌클릭", 26, TextAnchor.MiddleCenter, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 58f), new Vector2(620f, 44f)).gameObject;
             promptObject.SetActive(false);
 
-            GameObject panel = CreatePanel("ShopPanel", canvasObject.transform, new Color(0.08f, 0.065f, 0.045f, 0.94f), new Vector2(0.5f, 0.5f), new Vector2(900f, 560f));
+            GameObject panel = CreatePanel("ShopPanel", canvasObject.transform, new Color(0.08f, 0.065f, 0.045f, 0.94f), new Vector2(0.5f, 0.5f), new Vector2(980f, 590f));
             ApplyImageSprite(panel, PanelFrameSpritePath, Image.Type.Sliced);
-            GameObject titleFrame = CreatePanel("TitleFrame", panel.transform, new Color(0.33f, 0.18f, 0.08f, 0.72f), new Vector2(0.5f, 1f), new Vector2(790f, 50f));
+            GameObject titleFrame = CreatePanel("TitleFrame", panel.transform, new Color(0.33f, 0.18f, 0.08f, 0.72f), new Vector2(0.5f, 1f), new Vector2(860f, 50f));
             RectTransform titleFrameRect = titleFrame.GetComponent<RectTransform>();
             titleFrameRect.anchorMin = new Vector2(0.5f, 1f);
             titleFrameRect.anchorMax = new Vector2(0.5f, 1f);
@@ -300,11 +388,15 @@ namespace DiaToMas.Editor
             Text walletText = CreateText("WalletText", panel.transform, string.Empty, 18, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(44f, -78f), new Vector2(-150f, 32f));
             Text quantityText = CreateText("QuantityText", panel.transform, "수량: 1", 17, TextAnchor.MiddleRight, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-136f, -78f), new Vector2(210f, 32f));
 
-            CreateText("ShopHeaderText", panel.transform, "상점 상품", 21, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(238f, -118f), new Vector2(390f, 30f));
-            Transform itemRoot = CreateScrollContent("ItemScrollFrame", panel.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(236f, -290f), new Vector2(410f, 310f));
+            CreateColumnPanel("ShopColumnPanel", panel.transform, new Color(0.12f, 0.095f, 0.065f, 0.72f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(255f, -302f), new Vector2(455f, 386f));
+            CreateColumnPanel("InventoryColumnPanel", panel.transform, new Color(0.08f, 0.105f, 0.095f, 0.72f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-255f, -302f), new Vector2(455f, 386f));
+            CreateColumnPanel("ColumnDivider", panel.transform, new Color(0.74f, 0.51f, 0.24f, 0.55f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -302f), new Vector2(6f, 386f));
 
-            Text inventoryText = CreateText("InventoryText", panel.transform, "내 인벤토리", 21, TextAnchor.MiddleLeft, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-224f, -118f), new Vector2(390f, 30f));
-            Transform inventoryRoot = CreateScrollContent("InventoryScrollFrame", panel.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-236f, -290f), new Vector2(410f, 310f));
+            CreateText("ShopHeaderText", panel.transform, "상점 상품", 21, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(255f, -118f), new Vector2(420f, 30f));
+            Transform itemRoot = CreateScrollContent("ItemScrollFrame", panel.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(255f, -300f), new Vector2(440f, 320f));
+
+            Text inventoryText = CreateText("InventoryText", panel.transform, "내 인벤토리", 21, TextAnchor.MiddleLeft, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-255f, -118f), new Vector2(420f, 30f));
+            Transform inventoryRoot = CreateScrollContent("InventoryScrollFrame", panel.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-255f, -300f), new Vector2(440f, 320f));
 
             Text feedbackText = CreateText("FeedbackText", panel.transform, string.Empty, 18, TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 74f), new Vector2(-92f, 34f));
             feedbackText.color = new Color(1f, 0.78f, 0.42f);
@@ -334,22 +426,58 @@ namespace DiaToMas.Editor
             SetObject(presenter, "_closeButton", closeButton);
             SetObject(presenter, "_quantitySelector", quantitySelector);
 
+            CreatePlayerInventoryPanel(canvasObject.transform, inventoryRowPrefab);
             panel.SetActive(false);
             CreateEventSystem();
             return presenter;
         }
 
+        private static PlayerInventoryPresenter CreatePlayerInventoryPanel(Transform canvasTransform, InventoryItemRowView inventoryRowPrefab)
+        {
+            GameObject panel = CreatePanel("PlayerInventoryPanel", canvasTransform, new Color(0.07f, 0.085f, 0.065f, 0.95f), new Vector2(0.5f, 0.5f), new Vector2(560f, 520f));
+            ApplyImageSprite(panel, PanelFrameSpritePath, Image.Type.Sliced);
+
+            GameObject titleFrame = CreatePanel("PlayerInventoryTitleFrame", panel.transform, new Color(0.22f, 0.28f, 0.16f, 0.76f), new Vector2(0.5f, 1f), new Vector2(450f, 48f));
+            RectTransform titleFrameRect = titleFrame.GetComponent<RectTransform>();
+            titleFrameRect.anchorMin = new Vector2(0.5f, 1f);
+            titleFrameRect.anchorMax = new Vector2(0.5f, 1f);
+            titleFrameRect.anchoredPosition = new Vector2(-30f, -34f);
+            ApplyImageSprite(titleFrame, ListFrameSpritePath, Image.Type.Sliced);
+
+            Text titleText = CreateText("PlayerInventoryTitleText", panel.transform, "플레이어 인벤토리", 25, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(12f, -34f), new Vector2(-120f, 48f));
+            titleText.color = new Color(1f, 0.86f, 0.56f);
+
+            Text walletText = CreateText("PlayerInventoryWalletText", panel.transform, string.Empty, 17, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -82f), new Vector2(-54f, 30f));
+            CreateText("PlayerInventoryGuideText", panel.transform, "아이템을 바깥으로 드래그하면 바닥에 떨어집니다.", 14, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -112f), new Vector2(-54f, 26f));
+
+            Transform inventoryRoot = CreateScrollContent("PlayerInventoryScrollFrame", panel.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -275f), new Vector2(470f, 290f));
+            Text feedbackText = CreateText("PlayerInventoryFeedbackText", panel.transform, string.Empty, 16, TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 46f), new Vector2(-50f, 28f));
+            feedbackText.color = new Color(1f, 0.78f, 0.42f);
+
+            Button closeButton = CreateButton("PlayerInventoryCloseButton", panel.transform, "닫기", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-60f, -34f), new Vector2(88f, 34f));
+            PlayerInventoryPresenter presenter = canvasTransform.gameObject.AddComponent<PlayerInventoryPresenter>();
+            SetObject(presenter, "_rootObject", panel);
+            SetObject(presenter, "_inventoryRoot", inventoryRoot);
+            SetObject(presenter, "_inventoryItemRowPrefab", inventoryRowPrefab);
+            SetObject(presenter, "_walletText", walletText);
+            SetObject(presenter, "_feedbackText", feedbackText);
+            SetObject(presenter, "_closeButton", closeButton);
+
+            panel.SetActive(false);
+            return presenter;
+        }
+
         private static ShopItemButtonView CreateShopItemRowPrefab()
         {
-            GameObject row = CreatePanel("ShopItemRow", null, new Color(0.18f, 0.145f, 0.1f, 0.96f), new Vector2(0.5f, 0.5f), new Vector2(386f, 76f));
-            AddLayoutElement(row, 386f, 76f);
+            GameObject row = CreatePanel("ShopItemRow", null, new Color(0.18f, 0.145f, 0.1f, 0.96f), new Vector2(0.5f, 0.5f), new Vector2(420f, 78f));
+            AddLayoutElement(row, 420f, 78f);
             ApplyImageSprite(row, RowFrameSpritePath, Image.Type.Sliced);
-            Image iconImage = CreateImage("IconImage", row.transform, DefaultItemIconSpritePath, Color.white, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(42f, 0f), new Vector2(42f, 42f));
-            Text nameText = CreateText("NameText", row.transform, "아이템", 17, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(92f, -18f), new Vector2(180f, 22f));
-            Text descriptionText = CreateText("DescriptionText", row.transform, "설명", 12, TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(176f, 21f), new Vector2(240f, 22f));
-            Text priceText = CreateText("PriceText", row.transform, "0 골드", 14, TextAnchor.MiddleRight, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-116f, -20f), new Vector2(90f, 24f));
-            Text stockText = CreateText("StockText", row.transform, "재고 0", 12, TextAnchor.MiddleRight, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-116f, 21f), new Vector2(90f, 22f));
-            Button buyButton = CreateButton("BuyButton", row.transform, "구매", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-40f, 0f), new Vector2(64f, 32f));
+            Image iconImage = CreateImage("IconImage", row.transform, DefaultItemIconSpritePath, Color.white, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(48f, 0f), new Vector2(44f, 44f));
+            Text nameText = CreateText("NameText", row.transform, "아이템", 17, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(142f, -18f), new Vector2(168f, 22f));
+            Text descriptionText = CreateText("DescriptionText", row.transform, "설명", 12, TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(166f, 22f), new Vector2(210f, 22f));
+            Text priceText = CreateText("PriceText", row.transform, "0 골드", 14, TextAnchor.MiddleRight, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-132f, -20f), new Vector2(100f, 24f));
+            Text stockText = CreateText("StockText", row.transform, "재고 0", 12, TextAnchor.MiddleRight, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-132f, 21f), new Vector2(100f, 22f));
+            Button buyButton = CreateButton("BuyButton", row.transform, "구매", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-45f, 0f), new Vector2(70f, 32f));
 
             ShopItemButtonView buttonView = row.AddComponent<ShopItemButtonView>();
             SetObject(buttonView, "_nameText", nameText);
@@ -366,15 +494,15 @@ namespace DiaToMas.Editor
 
         private static InventoryItemRowView CreateInventoryItemRowPrefab()
         {
-            GameObject row = CreatePanel("InventoryItemRow", null, new Color(0.17f, 0.135f, 0.095f, 0.96f), new Vector2(0.5f, 0.5f), new Vector2(386f, 66f));
-            AddLayoutElement(row, 386f, 66f);
+            GameObject row = CreatePanel("InventoryItemRow", null, new Color(0.12f, 0.155f, 0.125f, 0.96f), new Vector2(0.5f, 0.5f), new Vector2(420f, 70f));
+            AddLayoutElement(row, 420f, 70f);
             ApplyImageSprite(row, RowFrameSpritePath, Image.Type.Sliced);
-            Image iconImage = CreateImage("IconImage", row.transform, DefaultItemIconSpritePath, Color.white, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(34f, 0f), new Vector2(38f, 38f));
-            Text nameText = CreateText("NameText", row.transform, "아이템", 16, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(78f, 10f), new Vector2(132f, 22f));
-            Text amountText = CreateText("AmountText", row.transform, "x0", 14, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(78f, -12f), new Vector2(62f, 20f));
-            Text sellPriceText = CreateText("SellPriceText", row.transform, "0 골드", 13, TextAnchor.MiddleRight, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-158f, 0f), new Vector2(78f, 22f));
-            Button sellButton = CreateButton("SellButton", row.transform, "판매", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-88f, 0f), new Vector2(54f, 30f));
-            Button dismantleButton = CreateButton("DismantleButton", row.transform, "분해", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-30f, 0f), new Vector2(54f, 30f));
+            Image iconImage = CreateImage("IconImage", row.transform, DefaultItemIconSpritePath, Color.white, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(48f, 0f), new Vector2(40f, 40f));
+            Text nameText = CreateText("NameText", row.transform, "아이템", 16, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(140f, 11f), new Vector2(150f, 22f));
+            Text amountText = CreateText("AmountText", row.transform, "x0", 14, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(140f, -13f), new Vector2(150f, 20f));
+            Text sellPriceText = CreateText("SellPriceText", row.transform, "0 골드", 13, TextAnchor.MiddleRight, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-170f, 0f), new Vector2(78f, 22f));
+            Button sellButton = CreateButton("SellButton", row.transform, "판매", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-96f, 0f), new Vector2(58f, 30f));
+            Button dismantleButton = CreateButton("DismantleButton", row.transform, "분해", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-34f, 0f), new Vector2(58f, 30f));
 
             InventoryItemRowView rowView = row.AddComponent<InventoryItemRowView>();
             SetObject(rowView, "_nameText", nameText);
@@ -411,6 +539,11 @@ namespace DiaToMas.Editor
             if (pickup == null)
             {
                 pickup = pickupObject.AddComponent<WorldItemPickup>();
+            }
+
+            if (pickupObject.GetComponent<WorldItemHoverHighlightView>() == null)
+            {
+                pickupObject.AddComponent<WorldItemHoverHighlightView>();
             }
 
             SetString(pickup, "_itemId", "wolf_pelt");
@@ -525,6 +658,26 @@ namespace DiaToMas.Editor
             return material;
         }
 
+        private static Material CreateSunnySkyboxMaterial()
+        {
+            string path = "Assets/Materials/Sunny_Market_Skybox.mat";
+            Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (material == null)
+            {
+                Shader shader = Shader.Find("Skybox/Procedural") ?? Shader.Find("Skybox/Panoramic");
+                material = new Material(shader);
+                AssetDatabase.CreateAsset(material, path);
+            }
+
+            material.SetColor("_SkyTint", new Color(0.62f, 0.78f, 0.96f));
+            material.SetColor("_GroundColor", new Color(0.62f, 0.55f, 0.44f));
+            material.SetFloat("_AtmosphereThickness", 0.78f);
+            material.SetFloat("_Exposure", 1.23f);
+            material.SetFloat("_SunSize", 0.055f);
+            EditorUtility.SetDirty(material);
+            return material;
+        }
+
         private static Material CreateTexturedMaterial(string materialName, string texturePath, Color fallbackColor, Vector2 textureScale)
         {
             string path = $"Assets/Materials/{materialName}.mat";
@@ -570,6 +723,7 @@ namespace DiaToMas.Editor
 
             Image image = imageObject.GetComponent<Image>();
             image.raycastTarget = false;
+            image.preserveAspect = true;
             ApplyImageSprite(imageObject, spritePath, Image.Type.Simple);
             return image;
         }
@@ -613,6 +767,17 @@ namespace DiaToMas.Editor
             scrollRect.viewport = viewportRect;
             scrollRect.content = contentRect;
             return content.transform;
+        }
+
+        private static GameObject CreateColumnPanel(string name, Transform parent, Color color, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta)
+        {
+            GameObject panel = CreatePanel(name, parent, color, new Vector2(0.5f, 0.5f), sizeDelta);
+            RectTransform rectTransform = panel.GetComponent<RectTransform>();
+            rectTransform.anchorMin = anchorMin;
+            rectTransform.anchorMax = anchorMax;
+            rectTransform.anchoredPosition = anchoredPosition;
+            ApplyImageSprite(panel, ListFrameSpritePath, Image.Type.Sliced);
+            return panel;
         }
 
         private static Text CreateText(string name, Transform parent, string text, int fontSize, TextAnchor alignment, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta)
