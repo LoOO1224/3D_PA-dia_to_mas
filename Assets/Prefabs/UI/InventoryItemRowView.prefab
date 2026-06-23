@@ -278,7 +278,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Item
+  m_Text: "\uC544\uC774\uD15C"
 --- !u!1 &6372076875071615630
 GameObject:
   m_ObjectHideFlags: 0
@@ -453,7 +453,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Sell
+  m_Text: "\uD310\uB9E4"
 --- !u!1 &7104518711188064107
 GameObject:
   m_ObjectHideFlags: 0
@@ -532,4 +532,4 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0 Gold
+  m_Text: "0 \uACE8\uB4DC"

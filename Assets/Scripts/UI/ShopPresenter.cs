@@ -19,7 +19,7 @@ namespace DiaToMas.UI
         [SerializeField] private Text _feedbackText;
         [SerializeField] private Text _promptText;
         [SerializeField] private Button _closeButton;
-        [SerializeField] private Button _sellLootButton;
+        [SerializeField] private ShopQuantitySelector _quantitySelector;
 
         private readonly List<ShopItemButtonView> _spawnedItemRows = new();
         private readonly List<InventoryItemRowView> _spawnedInventoryRows = new();
@@ -31,11 +31,6 @@ namespace DiaToMas.UI
             if (_closeButton != null)
             {
                 _closeButton.onClick.AddListener(Close);
-            }
-
-            if (_sellLootButton != null)
-            {
-                _sellLootButton.onClick.AddListener(SellLoot);
             }
 
             Close();
@@ -60,6 +55,7 @@ namespace DiaToMas.UI
             GameManager.Inst?.SetPlayerInputLocked(true);
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            _quantitySelector?.ResetQuantity();
             HidePrompt();
             Refresh();
         }
@@ -156,7 +152,7 @@ namespace DiaToMas.UI
         {
             PlayerModel playerModel = GameManager.Inst.PlayerModel;
             ShopStockModel stockModel = GameManager.Inst.ShopStockModel;
-            bool isSuccess = GameManager.Inst.ShopTransactionService.TryBuy(playerModel, stockModel, itemData, out string message);
+            bool isSuccess = GameManager.Inst.ShopTransactionService.TryBuy(playerModel, stockModel, itemData, GetSelectedQuantity(), out string message);
             SetFeedback(message);
 
             if (isSuccess)
@@ -169,19 +165,7 @@ namespace DiaToMas.UI
         {
             PlayerModel playerModel = GameManager.Inst.PlayerModel;
             ShopStockModel stockModel = GameManager.Inst.ShopStockModel;
-            bool isSuccess = GameManager.Inst.ShopTransactionService.TrySell(playerModel, stockModel, itemData, out string message);
-            SetFeedback(message);
-
-            if (isSuccess)
-            {
-                Refresh();
-            }
-        }
-
-        private void SellLoot()
-        {
-            PlayerModel playerModel = GameManager.Inst.PlayerModel;
-            bool isSuccess = GameManager.Inst.ShopTransactionService.TrySellLoot(playerModel, out string message);
+            bool isSuccess = GameManager.Inst.ShopTransactionService.TrySell(playerModel, stockModel, itemData, GetSelectedQuantity(), out string message);
             SetFeedback(message);
 
             if (isSuccess)
@@ -209,8 +193,8 @@ namespace DiaToMas.UI
         {
             PlayerInventoryModel inventoryModel = GameManager.Inst.PlayerModel.InventoryModel;
             _inventoryText.text = inventoryModel.ItemById.Count > 0
-                ? "Inventory"
-                : "Inventory: Empty";
+                ? "인벤토리"
+                : "인벤토리: 비어 있음";
         }
 
         private void SetFeedback(string message)
@@ -256,6 +240,11 @@ namespace DiaToMas.UI
             return GameManager.Inst.GameDataManager.CurrencyDataById.TryGetValue(currencyId, out CurrencyData currencyData)
                 ? currencyData.displayName
                 : currencyId;
+        }
+
+        private int GetSelectedQuantity()
+        {
+            return _quantitySelector != null ? _quantitySelector.Quantity : 1;
         }
     }
 }

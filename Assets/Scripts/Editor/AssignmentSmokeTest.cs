@@ -83,7 +83,7 @@ namespace DiaToMas.Editor
             RequireReference(presenter, "_feedbackText");
             RequireReference(presenter, "_promptText");
             RequireReference(presenter, "_closeButton");
-            RequireReference(presenter, "_sellLootButton");
+            RequireReference(presenter, "_quantitySelector");
 
             RequirePrefabComponent<ShopItemButtonView>("Assets/Prefabs/UI/ShopItemButtonView.prefab");
             RequirePrefabComponent<InventoryItemRowView>("Assets/Prefabs/UI/InventoryItemRowView.prefab");
@@ -122,21 +122,19 @@ namespace DiaToMas.Editor
             int startRuneShardAmount = playerModel.InventoryModel.GetAmount(runeShardData.id);
             Require(startRuneShardAmount > 0, "Starting inventory should include rune shards.");
 
-            Require(transactionService.TryBuy(playerModel, stockModel, potionData, out _), "Potion purchase should succeed.");
-            Require(playerModel.InventoryModel.GetAmount(potionData.id) == 1, "Potion purchase should add one inventory item.");
-            Require(playerModel.WalletModel.GetAmount("gold") == startGold - potionData.priceAmount, "Potion purchase should spend gold.");
-            Require(stockModel.GetStockCount(potionData.id) == startStock - 1, "Potion purchase should reduce stock.");
+            Require(transactionService.TryBuy(playerModel, stockModel, potionData, 2, out _), "Potion purchase should succeed.");
+            Require(playerModel.InventoryModel.GetAmount(potionData.id) == 2, "Potion purchase should add inventory items.");
+            Require(playerModel.WalletModel.GetAmount("gold") == startGold - potionData.priceAmount * 2, "Potion purchase should spend gold.");
+            Require(stockModel.GetStockCount(potionData.id) == startStock - 2, "Potion purchase should reduce stock.");
 
-            Require(transactionService.TrySell(playerModel, stockModel, potionData, out _), "Potion sale should succeed.");
+            Require(transactionService.TrySell(playerModel, stockModel, potionData, 2, out _), "Potion sale should succeed.");
             Require(playerModel.InventoryModel.GetAmount(potionData.id) == 0, "Potion sale should remove inventory item.");
-            Require(playerModel.WalletModel.GetAmount("gold") == startGold - potionData.priceAmount + potionData.sellAmount, "Potion sale should add sell currency.");
+            Require(playerModel.WalletModel.GetAmount("gold") == startGold - potionData.priceAmount * 2 + potionData.sellAmount * 2, "Potion sale should add sell currency.");
             Require(stockModel.GetStockCount(potionData.id) == startStock, "Potion sale should restore stock.");
 
-            Require(transactionService.TrySell(playerModel, stockModel, runeShardData, out _), "Rune shard sale should succeed.");
-            Require(playerModel.InventoryModel.GetAmount(runeShardData.id) == startRuneShardAmount - 1, "Rune shard sale should remove one shard.");
-            Require(playerModel.WalletModel.GetAmount("crystal") == startCrystal + runeShardData.sellAmount, "Rune shard sale should add crystal currency.");
-
-            Require(transactionService.TrySellLoot(playerModel, out _), "Loot sale should succeed with starting loot.");
+            Require(transactionService.TryDismantle(playerModel, runeShardData, 1, out _), "Rune shard dismantle should succeed.");
+            Require(playerModel.InventoryModel.GetAmount(runeShardData.id) == startRuneShardAmount - 1, "Rune shard dismantle should remove one shard.");
+            Require(playerModel.WalletModel.GetAmount("crystal") == startCrystal + runeShardData.dismantleAmount, "Rune shard dismantle should add crystal currency.");
         }
 
         private static GameObject RequireGameObject(string objectName)

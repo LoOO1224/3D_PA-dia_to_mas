@@ -7,7 +7,7 @@ namespace DiaToMas.Interaction
     public class ShopInteractable : MonoBehaviour, IPlayerInteractable
     {
         [SerializeField] private ShopPresenter _shopPresenter;
-        [SerializeField] private string _promptMessage = "Press E or Left Click to trade";
+        [SerializeField] private string _promptMessage = "상인과 거래: E 또는 좌클릭";
 
         private PlayerInputReader _currentInputReader;
 

@@ -2,21 +2,15 @@
   "items": [
     {
       "id": "gold",
-      "displayName": "Gold",
+      "displayName": "골드",
       "iconText": "G",
       "startAmount": 320
     },
     {
       "id": "crystal",
-      "displayName": "Crystal",
+      "displayName": "크리스탈",
       "iconText": "C",
       "startAmount": 18
-    },
-    {
-      "id": "loot",
-      "displayName": "Loot",
-      "iconText": "L",
-      "startAmount": 4
     }
   ]
 }

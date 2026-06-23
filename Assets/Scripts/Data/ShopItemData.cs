@@ -11,6 +11,8 @@ namespace DiaToMas.Data
         public int priceAmount;
         public string sellCurrencyId;
         public int sellAmount;
+        public string dismantleCurrencyId;
+        public int dismantleAmount;
         public bool isShopListed;
         public bool isStackable;
         public int stockCount;

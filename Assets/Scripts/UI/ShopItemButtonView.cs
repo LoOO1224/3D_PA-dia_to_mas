@@ -29,7 +29,7 @@ namespace DiaToMas.UI
             _nameText.text = itemData.displayName;
             _descriptionText.text = itemData.description;
             _priceText.text = $"{itemData.priceAmount} {currencyName}";
-            _stockText.text = stockCount > 0 ? $"Stock {stockCount}" : "Sold out";
+            _stockText.text = stockCount > 0 ? $"재고 {stockCount}" : "품절";
             _buyButton.interactable = stockCount > 0;
         }
 
