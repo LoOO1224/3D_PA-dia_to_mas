@@ -5,22 +5,51 @@ namespace DiaToMas.Services
 {
     public class ShopTransactionService
     {
-        public bool TryBuy(PlayerModel playerModel, ShopItemData itemData, out string message)
+        public bool TryBuy(PlayerModel playerModel, ShopStockModel stockModel, ShopItemData itemData, out string message)
         {
-            if (playerModel == null || itemData == null)
+            if (playerModel == null || stockModel == null || itemData == null)
             {
-                message = "구매 정보를 확인할 수 없습니다.";
+                message = "Transaction data is missing.";
+                return false;
+            }
+
+            if (!stockModel.CanTake(itemData.id, 1))
+            {
+                message = $"{itemData.displayName} is out of stock.";
                 return false;
             }
 
             if (!playerModel.WalletModel.TrySpend(itemData.priceCurrencyId, itemData.priceAmount))
             {
-                message = "재화가 부족합니다.";
+                message = $"Not enough {itemData.priceCurrencyId}.";
                 return false;
             }
 
+            stockModel.TryTake(itemData.id, 1);
             playerModel.InventoryModel.AddItem(itemData.id, 1);
-            message = $"{itemData.displayName} 구매 완료";
+            message = $"Bought {itemData.displayName}.";
+            return true;
+        }
+
+        public bool TrySell(PlayerModel playerModel, ShopStockModel stockModel, ShopItemData itemData, out string message)
+        {
+            if (playerModel == null || stockModel == null || itemData == null)
+            {
+                message = "Transaction data is missing.";
+                return false;
+            }
+
+            if (!playerModel.InventoryModel.TryRemoveItem(itemData.id, 1))
+            {
+                message = $"You do not have {itemData.displayName}.";
+                return false;
+            }
+
+            string sellCurrencyId = GetSellCurrencyId(itemData);
+            int sellAmount = GetSellAmount(itemData);
+            playerModel.WalletModel.AddAmount(sellCurrencyId, sellAmount);
+            stockModel.AddStock(itemData.id, 1);
+            message = $"Sold {itemData.displayName} for {sellAmount} {sellCurrencyId}.";
             return true;
         }
 
@@ -32,13 +61,27 @@ namespace DiaToMas.Services
 
             if (playerModel == null || !playerModel.WalletModel.TrySpend(lootCurrencyId, 1))
             {
-                message = "판매할 전리품이 없습니다.";
+                message = "You do not have loot to sell.";
                 return false;
             }
 
             playerModel.WalletModel.AddAmount(goldCurrencyId, goldPerLoot);
-            message = "전리품을 판매해 골드를 획득했습니다.";
+            message = $"Sold loot for {goldPerLoot} gold.";
             return true;
+        }
+
+        private static string GetSellCurrencyId(ShopItemData itemData)
+        {
+            return string.IsNullOrWhiteSpace(itemData.sellCurrencyId)
+                ? itemData.priceCurrencyId
+                : itemData.sellCurrencyId;
+        }
+
+        private static int GetSellAmount(ShopItemData itemData)
+        {
+            return itemData.sellAmount > 0
+                ? itemData.sellAmount
+                : itemData.priceAmount / 2;
         }
     }
 }

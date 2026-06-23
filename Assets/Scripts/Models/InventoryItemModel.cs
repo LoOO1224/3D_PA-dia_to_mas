@@ -15,5 +15,21 @@ namespace DiaToMas.Models
         {
             Amount += amount;
         }
+
+        public bool CanRemove(int amount)
+        {
+            return amount > 0 && Amount >= amount;
+        }
+
+        public bool TryRemoveAmount(int amount)
+        {
+            if (!CanRemove(amount))
+            {
+                return false;
+            }
+
+            Amount -= amount;
+            return true;
+        }
     }
 }

@@ -11,7 +11,9 @@ namespace DiaToMas.UI
     {
         [SerializeField] private GameObject _rootObject;
         [SerializeField] private Transform _itemRoot;
+        [SerializeField] private Transform _inventoryRoot;
         [SerializeField] private ShopItemButtonView _itemButtonPrefab;
+        [SerializeField] private InventoryItemRowView _inventoryItemRowPrefab;
         [SerializeField] private Text _walletText;
         [SerializeField] private Text _inventoryText;
         [SerializeField] private Text _feedbackText;
@@ -19,31 +21,65 @@ namespace DiaToMas.UI
         [SerializeField] private Button _closeButton;
         [SerializeField] private Button _sellLootButton;
 
-        private readonly List<ShopItemButtonView> _spawnedRows = new();
+        private readonly List<ShopItemButtonView> _spawnedItemRows = new();
+        private readonly List<InventoryItemRowView> _spawnedInventoryRows = new();
+
+        private bool IsOpen => _rootObject != null && _rootObject.activeSelf;
 
         private void Awake()
         {
-            _closeButton.onClick.AddListener(Close);
-            _sellLootButton.onClick.AddListener(SellLoot);
+            if (_closeButton != null)
+            {
+                _closeButton.onClick.AddListener(Close);
+            }
+
+            if (_sellLootButton != null)
+            {
+                _sellLootButton.onClick.AddListener(SellLoot);
+            }
+
             Close();
+        }
+
+        private void Update()
+        {
+            if (IsOpen && Input.GetKeyDown(KeyCode.Escape))
+            {
+                Close();
+            }
         }
 
         public void Open()
         {
+            if (_rootObject == null)
+            {
+                return;
+            }
+
             _rootObject.SetActive(true);
+            GameManager.Inst?.SetPlayerInputLocked(true);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
             HidePrompt();
             Refresh();
         }
 
         public void Close()
         {
-            _rootObject.SetActive(false);
+            if (_rootObject != null)
+            {
+                _rootObject.SetActive(false);
+            }
+
+            GameManager.Inst?.SetPlayerInputLocked(false);
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
             SetFeedback(string.Empty);
         }
 
         public void ShowPrompt(string message)
         {
-            if (_promptText == null)
+            if (_promptText == null || IsOpen)
             {
                 return;
             }
@@ -62,37 +98,78 @@ namespace DiaToMas.UI
 
         private void Refresh()
         {
+            if (GameManager.Inst == null)
+            {
+                return;
+            }
+
             ClearRows();
             RefreshWalletText();
             RefreshInventoryText();
-            CreateRows();
+            CreateItemRows();
+            CreateInventoryRows();
         }
 
-        private void CreateRows()
+        private void CreateItemRows()
         {
             GameDataManager dataManager = GameManager.Inst.GameDataManager;
+            ShopStockModel stockModel = GameManager.Inst.ShopStockModel;
+
             foreach (ShopItemData itemData in dataManager.ShopItemDataById.Values)
             {
                 ShopItemButtonView row = Instantiate(_itemButtonPrefab, _itemRoot);
-                string currencyName = dataManager.CurrencyDataById.TryGetValue(itemData.priceCurrencyId, out CurrencyData currencyData)
-                    ? currencyData.displayName
-                    : itemData.priceCurrencyId;
+                string currencyName = GetCurrencyName(itemData.priceCurrencyId);
+                int stockCount = stockModel.GetStockCount(itemData.id);
 
-                row.Setup(itemData, currencyName, Buy);
-                _spawnedRows.Add(row);
+                row.Setup(itemData, currencyName, stockCount, Buy);
+                _spawnedItemRows.Add(row);
+            }
+        }
+
+        private void CreateInventoryRows()
+        {
+            PlayerInventoryModel inventoryModel = GameManager.Inst.PlayerModel.InventoryModel;
+
+            foreach (InventoryItemModel itemModel in inventoryModel.ItemById.Values)
+            {
+                if (!GameManager.Inst.GameDataManager.TryGetShopItemData(itemModel.ItemId, out ShopItemData itemData))
+                {
+                    continue;
+                }
+
+                InventoryItemRowView row = Instantiate(_inventoryItemRowPrefab, _inventoryRoot);
+                string sellCurrencyId = GetSellCurrencyId(itemData);
+                string currencyName = GetCurrencyName(sellCurrencyId);
+                int sellAmount = GetSellAmount(itemData);
+
+                row.Setup(itemData, itemModel.Amount, currencyName, sellAmount, SellItem);
+                _spawnedInventoryRows.Add(row);
             }
         }
 
         private void Buy(ShopItemData itemData)
         {
             PlayerModel playerModel = GameManager.Inst.PlayerModel;
-            bool isSuccess = GameManager.Inst.ShopTransactionService.TryBuy(playerModel, itemData, out string message);
+            ShopStockModel stockModel = GameManager.Inst.ShopStockModel;
+            bool isSuccess = GameManager.Inst.ShopTransactionService.TryBuy(playerModel, stockModel, itemData, out string message);
             SetFeedback(message);
 
             if (isSuccess)
             {
-                RefreshWalletText();
-                RefreshInventoryText();
+                Refresh();
+            }
+        }
+
+        private void SellItem(ShopItemData itemData)
+        {
+            PlayerModel playerModel = GameManager.Inst.PlayerModel;
+            ShopStockModel stockModel = GameManager.Inst.ShopStockModel;
+            bool isSuccess = GameManager.Inst.ShopTransactionService.TrySell(playerModel, stockModel, itemData, out string message);
+            SetFeedback(message);
+
+            if (isSuccess)
+            {
+                Refresh();
             }
         }
 
@@ -104,7 +181,7 @@ namespace DiaToMas.UI
 
             if (isSuccess)
             {
-                RefreshWalletText();
+                Refresh();
             }
         }
 
@@ -126,33 +203,54 @@ namespace DiaToMas.UI
         private void RefreshInventoryText()
         {
             PlayerInventoryModel inventoryModel = GameManager.Inst.PlayerModel.InventoryModel;
-            List<string> parts = new();
-
-            foreach (InventoryItemModel itemModel in inventoryModel.ItemById.Values)
-            {
-                string displayName = GameManager.Inst.GameDataManager.TryGetShopItemData(itemModel.ItemId, out ShopItemData itemData)
-                    ? itemData.displayName
-                    : itemModel.ItemId;
-
-                parts.Add($"{displayName} x{itemModel.Amount}");
-            }
-
-            _inventoryText.text = parts.Count > 0 ? string.Join("   ", parts) : "Inventory: Empty";
+            _inventoryText.text = inventoryModel.ItemById.Count > 0
+                ? "Inventory"
+                : "Inventory: Empty";
         }
 
         private void SetFeedback(string message)
         {
-            _feedbackText.text = message;
+            if (_feedbackText != null)
+            {
+                _feedbackText.text = message;
+            }
         }
 
         private void ClearRows()
         {
-            foreach (ShopItemButtonView row in _spawnedRows)
+            foreach (ShopItemButtonView row in _spawnedItemRows)
             {
                 Destroy(row.gameObject);
             }
 
-            _spawnedRows.Clear();
+            foreach (InventoryItemRowView row in _spawnedInventoryRows)
+            {
+                Destroy(row.gameObject);
+            }
+
+            _spawnedItemRows.Clear();
+            _spawnedInventoryRows.Clear();
+        }
+
+        private static string GetSellCurrencyId(ShopItemData itemData)
+        {
+            return string.IsNullOrWhiteSpace(itemData.sellCurrencyId)
+                ? itemData.priceCurrencyId
+                : itemData.sellCurrencyId;
+        }
+
+        private static int GetSellAmount(ShopItemData itemData)
+        {
+            return itemData.sellAmount > 0
+                ? itemData.sellAmount
+                : itemData.priceAmount / 2;
+        }
+
+        private static string GetCurrencyName(string currencyId)
+        {
+            return GameManager.Inst.GameDataManager.CurrencyDataById.TryGetValue(currencyId, out CurrencyData currencyData)
+                ? currencyData.displayName
+                : currencyId;
         }
     }
 }

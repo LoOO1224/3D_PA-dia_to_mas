@@ -10,6 +10,7 @@ namespace DiaToMas.UI
         [SerializeField] private Text _nameText;
         [SerializeField] private Text _descriptionText;
         [SerializeField] private Text _priceText;
+        [SerializeField] private Text _stockText;
         [SerializeField] private Button _buyButton;
 
         private ShopItemData _itemData;
@@ -20,7 +21,7 @@ namespace DiaToMas.UI
             _buyButton.onClick.AddListener(Buy);
         }
 
-        public void Setup(ShopItemData itemData, string currencyName, Action<ShopItemData> onBuy)
+        public void Setup(ShopItemData itemData, string currencyName, int stockCount, Action<ShopItemData> onBuy)
         {
             _itemData = itemData;
             _onBuy = onBuy;
@@ -28,6 +29,8 @@ namespace DiaToMas.UI
             _nameText.text = itemData.displayName;
             _descriptionText.text = itemData.description;
             _priceText.text = $"{itemData.priceAmount} {currencyName}";
+            _stockText.text = stockCount > 0 ? $"Stock {stockCount}" : "Sold out";
+            _buyButton.interactable = stockCount > 0;
         }
 
         private void Buy()

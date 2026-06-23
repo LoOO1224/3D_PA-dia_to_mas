@@ -6,6 +6,8 @@
       "description": "A basic potion for long roads.",
       "priceCurrencyId": "gold",
       "priceAmount": 45,
+      "sellCurrencyId": "gold",
+      "sellAmount": 22,
       "isStackable": true,
       "stockCount": 99
     },
@@ -15,6 +17,8 @@
       "description": "A small charm traded by village merchants.",
       "priceCurrencyId": "crystal",
       "priceAmount": 6,
+      "sellCurrencyId": "gold",
+      "sellAmount": 90,
       "isStackable": false,
       "stockCount": 3
     },
@@ -24,6 +28,8 @@
       "description": "Sturdy boots suited for jumping and sprinting.",
       "priceCurrencyId": "gold",
       "priceAmount": 130,
+      "sellCurrencyId": "gold",
+      "sellAmount": 65,
       "isStackable": false,
       "stockCount": 1
     },
@@ -33,6 +39,8 @@
       "description": "A bundled trade item exchanged for trophies.",
       "priceCurrencyId": "loot",
       "priceAmount": 2,
+      "sellCurrencyId": "gold",
+      "sellAmount": 70,
       "isStackable": true,
       "stockCount": 4
     }

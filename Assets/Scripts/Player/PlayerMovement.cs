@@ -34,6 +34,13 @@ namespace DiaToMas.Player
         private void FixedUpdate()
         {
             CheckGrounded();
+
+            if (GameManager.Inst != null && GameManager.Inst.IsPlayerInputLocked)
+            {
+                StopHorizontalMovement();
+                return;
+            }
+
             Move();
             TryJump();
         }
@@ -73,6 +80,15 @@ namespace DiaToMas.Player
             PlayerMovementData movementData = GetMovementData();
             Vector3 velocity = _rigidbody.linearVelocity;
             velocity.y = movementData.jumpForce;
+            _rigidbody.linearVelocity = velocity;
+        }
+
+        private void StopHorizontalMovement()
+        {
+            _moveDirection = Vector3.zero;
+            Vector3 velocity = _rigidbody.linearVelocity;
+            velocity.x = 0f;
+            velocity.z = 0f;
             _rigidbody.linearVelocity = velocity;
         }
 

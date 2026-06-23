@@ -15,6 +15,7 @@ namespace DiaToMas.Editor
     {
         private const string ScenePath = "Assets/Scenes/3D_PA-dia_to_mas.unity";
         private const string RowPrefabPath = "Assets/Prefabs/UI/ShopItemButtonView.prefab";
+        private const string InventoryRowPrefabPath = "Assets/Prefabs/UI/InventoryItemRowView.prefab";
 
         private static readonly string[] BuildRootNames =
         {
@@ -22,9 +23,13 @@ namespace DiaToMas.Editor
             "Scene_Environment",
             "Player_Mage",
             "Merchant",
+            "Main Camera",
             "ThirdPersonCamera",
             "ShopCanvas",
-            "EventSystem"
+            "EventSystem",
+            "Directional Light",
+            "Sun Light",
+            "Shop Warm Light"
         };
 
         [MenuItem("Tools/DiaToMas/Build Assignment Scene")]
@@ -38,7 +43,8 @@ namespace DiaToMas.Editor
             Material woodMaterial = CreateMaterial("Fallback_Wood", new Color(0.42f, 0.25f, 0.12f));
 
             ShopItemButtonView itemRowPrefab = CreateShopItemRowPrefab();
-            ShopPresenter shopPresenter = CreateShopCanvas(itemRowPrefab);
+            InventoryItemRowView inventoryRowPrefab = CreateInventoryItemRowPrefab();
+            ShopPresenter shopPresenter = CreateShopCanvas(itemRowPrefab, inventoryRowPrefab);
             CreateGameManager();
             CreateEnvironment(groundMaterial, fallbackMaterial, woodMaterial);
 
@@ -60,9 +66,10 @@ namespace DiaToMas.Editor
             foreach (string rootName in BuildRootNames)
             {
                 GameObject target = GameObject.Find(rootName);
-                if (target != null)
+                while (target != null)
                 {
                     Object.DestroyImmediate(target);
+                    target = GameObject.Find(rootName);
                 }
             }
         }
@@ -199,6 +206,9 @@ namespace DiaToMas.Editor
             GameObject cameraObject = new("ThirdPersonCamera");
             Camera camera = cameraObject.AddComponent<Camera>();
             camera.tag = "MainCamera";
+            camera.fieldOfView = 58f;
+            camera.nearClipPlane = 0.08f;
+            camera.farClipPlane = 200f;
             camera.transform.position = new Vector3(0f, 4.5f, -7f);
             camera.transform.rotation = Quaternion.Euler(28f, 0f, 0f);
             cameraObject.AddComponent<AudioListener>();
@@ -223,7 +233,7 @@ namespace DiaToMas.Editor
             shopLight.range = 8f;
         }
 
-        private static ShopPresenter CreateShopCanvas(ShopItemButtonView itemRowPrefab)
+        private static ShopPresenter CreateShopCanvas(ShopItemButtonView itemRowPrefab, InventoryItemRowView inventoryRowPrefab)
         {
             GameObject canvasObject = new("ShopCanvas");
             Canvas canvas = canvasObject.AddComponent<Canvas>();
@@ -234,23 +244,29 @@ namespace DiaToMas.Editor
             GameObject promptObject = CreateText("PromptText", canvasObject.transform, "Press E to trade", 28, TextAnchor.MiddleCenter, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 62f), new Vector2(520f, 48f)).gameObject;
             promptObject.SetActive(false);
 
-            GameObject panel = CreatePanel("ShopPanel", canvasObject.transform, new Color(0.08f, 0.065f, 0.045f, 0.92f), new Vector2(0.5f, 0.5f), new Vector2(860f, 560f));
-            Text titleText = CreateText("TitleText", panel.transform, "Cinderkeep Merchant", 32, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -38f), new Vector2(-60f, 54f));
+            GameObject panel = CreatePanel("ShopPanel", canvasObject.transform, new Color(0.08f, 0.065f, 0.045f, 0.94f), new Vector2(0.5f, 0.5f), new Vector2(980f, 620f));
+            Text titleText = CreateText("TitleText", panel.transform, "Cinderkeep Merchant", 31, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -38f), new Vector2(-70f, 54f));
             titleText.color = new Color(1f, 0.86f, 0.56f);
 
-            Text walletText = CreateText("WalletText", panel.transform, string.Empty, 20, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -90f), new Vector2(-60f, 34f));
-            Transform itemRoot = CreatePanel("ItemRoot", panel.transform, new Color(0.12f, 0.1f, 0.075f, 0.8f), new Vector2(0.5f, 0.5f), new Vector2(760f, 300f)).transform;
-            RectTransform itemRootRect = itemRoot.GetComponent<RectTransform>();
-            itemRootRect.anchoredPosition = new Vector2(0f, -20f);
-            VerticalLayoutGroup layoutGroup = itemRoot.gameObject.AddComponent<VerticalLayoutGroup>();
-            layoutGroup.childControlHeight = false;
-            layoutGroup.childControlWidth = true;
-            layoutGroup.childForceExpandHeight = false;
-            layoutGroup.spacing = 8f;
-            layoutGroup.padding = new RectOffset(10, 10, 10, 10);
+            Text walletText = CreateText("WalletText", panel.transform, string.Empty, 19, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -88f), new Vector2(-70f, 34f));
 
-            Text inventoryText = CreateText("InventoryText", panel.transform, "Inventory: Empty", 18, TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 78f), new Vector2(-60f, 36f));
-            Text feedbackText = CreateText("FeedbackText", panel.transform, string.Empty, 20, TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 42f), new Vector2(-60f, 34f));
+            CreateText("ShopHeaderText", panel.transform, "Shop Stock", 22, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(258f, -128f), new Vector2(420f, 32f));
+            Transform itemRoot = CreatePanel("ItemRoot", panel.transform, new Color(0.12f, 0.1f, 0.075f, 0.82f), new Vector2(0f, 1f), new Vector2(520f, 350f)).transform;
+            RectTransform itemRootRect = itemRoot.GetComponent<RectTransform>();
+            itemRootRect.anchorMin = new Vector2(0f, 1f);
+            itemRootRect.anchorMax = new Vector2(0f, 1f);
+            itemRootRect.anchoredPosition = new Vector2(40f, -168f);
+            AddVerticalLayout(itemRoot.gameObject, new RectOffset(10, 10, 10, 10), 8f);
+
+            Text inventoryText = CreateText("InventoryText", panel.transform, "Inventory: Empty", 22, TextAnchor.MiddleLeft, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-248f, -128f), new Vector2(390f, 32f));
+            Transform inventoryRoot = CreatePanel("InventoryRoot", panel.transform, new Color(0.105f, 0.09f, 0.07f, 0.82f), new Vector2(1f, 1f), new Vector2(360f, 350f)).transform;
+            RectTransform inventoryRootRect = inventoryRoot.GetComponent<RectTransform>();
+            inventoryRootRect.anchorMin = new Vector2(1f, 1f);
+            inventoryRootRect.anchorMax = new Vector2(1f, 1f);
+            inventoryRootRect.anchoredPosition = new Vector2(-40f, -168f);
+            AddVerticalLayout(inventoryRoot.gameObject, new RectOffset(10, 10, 10, 10), 8f);
+
+            Text feedbackText = CreateText("FeedbackText", panel.transform, string.Empty, 20, TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 54f), new Vector2(-70f, 36f));
             feedbackText.color = new Color(1f, 0.78f, 0.42f);
 
             Button sellButton = CreateButton("SellLootButton", panel.transform, "Sell Loot", new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(126f, 24f), new Vector2(160f, 42f));
@@ -259,7 +275,9 @@ namespace DiaToMas.Editor
             ShopPresenter presenter = canvasObject.AddComponent<ShopPresenter>();
             SetObject(presenter, "_rootObject", panel);
             SetObject(presenter, "_itemRoot", itemRoot);
+            SetObject(presenter, "_inventoryRoot", inventoryRoot);
             SetObject(presenter, "_itemButtonPrefab", itemRowPrefab);
+            SetObject(presenter, "_inventoryItemRowPrefab", inventoryRowPrefab);
             SetObject(presenter, "_walletText", walletText);
             SetObject(presenter, "_inventoryText", inventoryText);
             SetObject(presenter, "_feedbackText", feedbackText);
@@ -274,21 +292,42 @@ namespace DiaToMas.Editor
 
         private static ShopItemButtonView CreateShopItemRowPrefab()
         {
-            GameObject row = CreatePanel("ShopItemRow", null, new Color(0.18f, 0.145f, 0.1f, 0.96f), new Vector2(0.5f, 0.5f), new Vector2(720f, 62f));
-            Text nameText = CreateText("NameText", row.transform, "Item", 19, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(110f, 12f), new Vector2(200f, 26f));
-            Text descriptionText = CreateText("DescriptionText", row.transform, "Description", 14, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(242f, -12f), new Vector2(430f, 24f));
-            Text priceText = CreateText("PriceText", row.transform, "0 Gold", 16, TextAnchor.MiddleRight, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-150f, 0f), new Vector2(120f, 28f));
-            Button buyButton = CreateButton("BuyButton", row.transform, "Buy", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-50f, 0f), new Vector2(80f, 34f));
+            GameObject row = CreatePanel("ShopItemRow", null, new Color(0.18f, 0.145f, 0.1f, 0.96f), new Vector2(0.5f, 0.5f), new Vector2(500f, 78f));
+            Text nameText = CreateText("NameText", row.transform, "Item", 18, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(112f, -18f), new Vector2(210f, 24f));
+            Text descriptionText = CreateText("DescriptionText", row.transform, "Description", 13, TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(204f, 22f), new Vector2(340f, 24f));
+            Text priceText = CreateText("PriceText", row.transform, "0 Gold", 15, TextAnchor.MiddleRight, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-152f, -20f), new Vector2(120f, 26f));
+            Text stockText = CreateText("StockText", row.transform, "Stock 0", 13, TextAnchor.MiddleRight, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-152f, 22f), new Vector2(120f, 22f));
+            Button buyButton = CreateButton("BuyButton", row.transform, "Buy", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-48f, 0f), new Vector2(74f, 34f));
 
             ShopItemButtonView buttonView = row.AddComponent<ShopItemButtonView>();
             SetObject(buttonView, "_nameText", nameText);
             SetObject(buttonView, "_descriptionText", descriptionText);
             SetObject(buttonView, "_priceText", priceText);
+            SetObject(buttonView, "_stockText", stockText);
             SetObject(buttonView, "_buyButton", buyButton);
 
             PrefabUtility.SaveAsPrefabAsset(row, RowPrefabPath);
             Object.DestroyImmediate(row);
             return Load<GameObject>(RowPrefabPath).GetComponent<ShopItemButtonView>();
+        }
+
+        private static InventoryItemRowView CreateInventoryItemRowPrefab()
+        {
+            GameObject row = CreatePanel("InventoryItemRow", null, new Color(0.17f, 0.135f, 0.095f, 0.96f), new Vector2(0.5f, 0.5f), new Vector2(340f, 58f));
+            Text nameText = CreateText("NameText", row.transform, "Item", 17, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(86f, 10f), new Vector2(160f, 24f));
+            Text amountText = CreateText("AmountText", row.transform, "x0", 15, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(86f, -12f), new Vector2(70f, 22f));
+            Text sellPriceText = CreateText("SellPriceText", row.transform, "0 Gold", 14, TextAnchor.MiddleRight, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-108f, 0f), new Vector2(88f, 24f));
+            Button sellButton = CreateButton("SellButton", row.transform, "Sell", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-38f, 0f), new Vector2(64f, 32f));
+
+            InventoryItemRowView rowView = row.AddComponent<InventoryItemRowView>();
+            SetObject(rowView, "_nameText", nameText);
+            SetObject(rowView, "_amountText", amountText);
+            SetObject(rowView, "_sellPriceText", sellPriceText);
+            SetObject(rowView, "_sellButton", sellButton);
+
+            PrefabUtility.SaveAsPrefabAsset(row, InventoryRowPrefabPath);
+            Object.DestroyImmediate(row);
+            return Load<GameObject>(InventoryRowPrefabPath).GetComponent<InventoryItemRowView>();
         }
 
         private static void CreateEventSystem()
@@ -409,6 +448,16 @@ namespace DiaToMas.Editor
             labelText.rectTransform.offsetMin = Vector2.zero;
             labelText.rectTransform.offsetMax = Vector2.zero;
             return button;
+        }
+
+        private static void AddVerticalLayout(GameObject target, RectOffset padding, float spacing)
+        {
+            VerticalLayoutGroup layoutGroup = target.AddComponent<VerticalLayoutGroup>();
+            layoutGroup.childControlHeight = false;
+            layoutGroup.childControlWidth = true;
+            layoutGroup.childForceExpandHeight = false;
+            layoutGroup.spacing = spacing;
+            layoutGroup.padding = padding;
         }
 
         private static T Load<T>(string assetPath) where T : Object

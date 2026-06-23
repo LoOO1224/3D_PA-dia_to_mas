@@ -1,3 +1,4 @@
+using DiaToMas.Managers;
 using UnityEngine;
 
 namespace DiaToMas.Player
@@ -16,6 +17,12 @@ namespace DiaToMas.Player
 
         private void Update()
         {
+            if (GameManager.Inst != null && GameManager.Inst.IsPlayerInputLocked)
+            {
+                ClearInput();
+                return;
+            }
+
             ReadMoveInput();
             ReadActionInput();
         }
@@ -31,6 +38,14 @@ namespace DiaToMas.Player
             _isJumpPressed = Input.GetButtonDown("Jump");
             _isInteractPressed = Input.GetKeyDown(KeyCode.E);
             _isRunHeld = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        }
+
+        private void ClearInput()
+        {
+            _moveInput = Vector2.zero;
+            _isJumpPressed = false;
+            _isInteractPressed = false;
+            _isRunHeld = false;
         }
 
         public bool ConsumeJump()

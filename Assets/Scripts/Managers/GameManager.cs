@@ -10,12 +10,16 @@ namespace DiaToMas.Managers
         [SerializeField] private GameDataManager _gameDataManager;
 
         private PlayerModel _playerModel;
+        private ShopStockModel _shopStockModel;
         private ShopTransactionService _shopTransactionService;
+        private bool _isPlayerInputLocked;
 
         public static GameManager Inst { get; private set; }
         public GameDataManager GameDataManager => _gameDataManager;
         public PlayerModel PlayerModel => _playerModel;
+        public ShopStockModel ShopStockModel => _shopStockModel;
         public ShopTransactionService ShopTransactionService => _shopTransactionService;
+        public bool IsPlayerInputLocked => _isPlayerInputLocked;
 
         private void Awake()
         {
@@ -41,7 +45,14 @@ namespace DiaToMas.Managers
                 _playerModel.WalletModel.SetAmount(currencyData.id, currencyData.startAmount);
             }
 
+            _shopStockModel = new ShopStockModel();
+            _shopStockModel.Initialize(_gameDataManager.ShopItemDataById.Values);
             _shopTransactionService = new ShopTransactionService();
+        }
+
+        public void SetPlayerInputLocked(bool isLocked)
+        {
+            _isPlayerInputLocked = isLocked;
         }
     }
 }
