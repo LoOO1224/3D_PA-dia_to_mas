@@ -4,7 +4,6 @@
       "id": "default",
       "moveSpeed": 4.5,
       "runMultiplier": 1.55,
-      "jumpForce": 6.5,
       "groundCheckRadius": 0.28
     }
   ]

@@ -42,7 +42,6 @@ namespace DiaToMas.Player
             }
 
             Move();
-            TryJump();
         }
 
         public void SetCameraTransform(Transform cameraTransform)
@@ -68,19 +67,6 @@ namespace DiaToMas.Player
                 Quaternion targetRotation = Quaternion.LookRotation(_moveDirection);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 12f * Time.fixedDeltaTime);
             }
-        }
-
-        private void TryJump()
-        {
-            if (!_inputReader.ConsumeJump() || !_isGrounded)
-            {
-                return;
-            }
-
-            PlayerMovementData movementData = GetMovementData();
-            Vector3 velocity = _rigidbody.linearVelocity;
-            velocity.y = movementData.jumpForce;
-            _rigidbody.linearVelocity = velocity;
         }
 
         private void StopHorizontalMovement()
@@ -110,7 +96,6 @@ namespace DiaToMas.Player
                 {
                     moveSpeed = 4.5f,
                     runMultiplier = 1.5f,
-                    jumpForce = 6.5f,
                     groundCheckRadius = 0.28f
                 };
         }

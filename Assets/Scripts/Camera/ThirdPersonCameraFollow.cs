@@ -9,11 +9,9 @@ namespace DiaToMas.CameraSystem
         [SerializeField] private Vector3 _targetOffset = new(0f, 1.45f, 0f);
         [SerializeField] private float _distance = 6f;
         [SerializeField] private float _minDistance = 3.2f;
-        [SerializeField] private float _maxDistance = 8f;
         [SerializeField] private float _followSpeed = 12f;
         [SerializeField] private float _lookSpeed = 14f;
         [SerializeField] private float _mouseSensitivity = 2.4f;
-        [SerializeField] private float _zoomSensitivity = 1.4f;
         [SerializeField] private float _minPitch = -8f;
         [SerializeField] private float _maxPitch = 48f;
         [SerializeField] private float _collisionRadius = 0.28f;
@@ -42,7 +40,6 @@ namespace DiaToMas.CameraSystem
             if (GameManager.Inst == null || !GameManager.Inst.IsPlayerInputLocked)
             {
                 RotateFromInput();
-                ZoomFromInput();
             }
 
             FollowTarget();
@@ -50,20 +47,14 @@ namespace DiaToMas.CameraSystem
 
         private void RotateFromInput()
         {
-            _yaw += Input.GetAxis("Mouse X") * _mouseSensitivity;
-            _pitch -= Input.GetAxis("Mouse Y") * _mouseSensitivity;
-            _pitch = Mathf.Clamp(_pitch, _minPitch, _maxPitch);
-        }
-
-        private void ZoomFromInput()
-        {
-            float scrollValue = Input.GetAxis("Mouse ScrollWheel");
-            if (Mathf.Abs(scrollValue) <= 0.001f)
+            if (!Input.GetMouseButton(1))
             {
                 return;
             }
 
-            _distance = Mathf.Clamp(_distance - scrollValue * _zoomSensitivity, _minDistance, _maxDistance);
+            _yaw += Input.GetAxis("Mouse X") * _mouseSensitivity;
+            _pitch -= Input.GetAxis("Mouse Y") * _mouseSensitivity;
+            _pitch = Mathf.Clamp(_pitch, _minPitch, _maxPitch);
         }
 
         private void FollowTarget()

@@ -7,7 +7,6 @@ namespace DiaToMas.Data
     {
         public float moveSpeed;
         public float runMultiplier;
-        public float jumpForce;
         public float groundCheckRadius;
     }
 }

@@ -36,6 +36,7 @@ namespace DiaToMas.Editor
             GameObject player = RequireGameObject("Player_Mage");
             RequireComponent<Rigidbody>(player);
             RequireComponent<PlayerInputReader>(player);
+            RequireComponent<PlayerClickInteractor>(player);
             RequireComponent<PlayerMovement>(player);
 
             if (player.GetComponentInChildren<Animator>() == null)

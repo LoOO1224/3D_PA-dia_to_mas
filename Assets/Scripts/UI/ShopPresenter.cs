@@ -72,8 +72,8 @@ namespace DiaToMas.UI
             }
 
             GameManager.Inst?.SetPlayerInputLocked(false);
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
             SetFeedback(string.Empty);
         }
 

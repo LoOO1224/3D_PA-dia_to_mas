@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace DiaToMas.Interaction
 {
-    public class ShopInteractable : MonoBehaviour
+    public class ShopInteractable : MonoBehaviour, IPlayerInteractable
     {
         [SerializeField] private ShopPresenter _shopPresenter;
         [SerializeField] private string _promptMessage = "Press E or Left Click to trade";
@@ -48,6 +48,11 @@ namespace DiaToMas.Interaction
                 return;
             }
 
+            Interact(_currentInputReader.gameObject);
+        }
+
+        public void Interact(GameObject interactor)
+        {
             _shopPresenter?.Open();
         }
     }

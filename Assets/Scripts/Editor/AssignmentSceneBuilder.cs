@@ -167,6 +167,12 @@ namespace DiaToMas.Editor
                 animatorView = player.AddComponent<PlayerAnimatorView>();
             }
 
+            PlayerClickInteractor clickInteractor = player.GetComponent<PlayerClickInteractor>();
+            if (clickInteractor == null)
+            {
+                clickInteractor = player.AddComponent<PlayerClickInteractor>();
+            }
+
             GameObject groundCheckPoint = new("GroundCheckPoint");
             groundCheckPoint.transform.SetParent(player.transform);
             groundCheckPoint.transform.localPosition = new Vector3(0f, 0.08f, 0f);
@@ -177,6 +183,7 @@ namespace DiaToMas.Editor
             SetObject(movement, "_groundCheckPoint", groundCheckPoint.transform);
             SetObject(animatorView, "_movement", movement);
             SetObject(animatorView, "_animator", player.GetComponentInChildren<Animator>());
+            SetObject(clickInteractor, "_camera", cameraTransform.GetComponent<Camera>());
             return player;
         }
 

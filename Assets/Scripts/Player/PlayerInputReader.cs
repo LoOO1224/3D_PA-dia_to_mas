@@ -6,12 +6,10 @@ namespace DiaToMas.Player
     public class PlayerInputReader : MonoBehaviour
     {
         private Vector2 _moveInput;
-        private bool _isJumpPressed;
         private bool _isInteractPressed;
         private bool _isRunHeld;
 
         public Vector2 MoveInput => _moveInput;
-        public bool IsJumpPressed => _isJumpPressed;
         public bool IsInteractPressed => _isInteractPressed;
         public bool IsRunHeld => _isRunHeld;
 
@@ -35,7 +33,6 @@ namespace DiaToMas.Player
 
         private void ReadActionInput()
         {
-            _isJumpPressed = Input.GetButtonDown("Jump");
             _isInteractPressed = Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(0);
             _isRunHeld = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
         }
@@ -43,20 +40,8 @@ namespace DiaToMas.Player
         private void ClearInput()
         {
             _moveInput = Vector2.zero;
-            _isJumpPressed = false;
             _isInteractPressed = false;
             _isRunHeld = false;
-        }
-
-        public bool ConsumeJump()
-        {
-            if (!_isJumpPressed)
-            {
-                return false;
-            }
-
-            _isJumpPressed = false;
-            return true;
         }
 
         public bool ConsumeInteract()
