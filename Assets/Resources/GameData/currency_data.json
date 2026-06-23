@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "id": "gold",
+      "displayName": "Gold",
+      "iconText": "G",
+      "startAmount": 320
+    },
+    {
+      "id": "crystal",
+      "displayName": "Crystal",
+      "iconText": "C",
+      "startAmount": 18
+    },
+    {
+      "id": "loot",
+      "displayName": "Loot",
+      "iconText": "L",
+      "startAmount": 4
+    }
+  ]
+}

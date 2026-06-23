@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "id": "traveler_potion",
+      "displayName": "Traveler Potion",
+      "description": "A basic potion for long roads.",
+      "priceCurrencyId": "gold",
+      "priceAmount": 45,
+      "isStackable": true,
+      "stockCount": 99
+    },
+    {
+      "id": "crystal_charm",
+      "displayName": "Crystal Charm",
+      "description": "A small charm traded by village merchants.",
+      "priceCurrencyId": "crystal",
+      "priceAmount": 6,
+      "isStackable": false,
+      "stockCount": 3
+    },
+    {
+      "id": "mercenary_boots",
+      "displayName": "Mercenary Boots",
+      "description": "Sturdy boots suited for jumping and sprinting.",
+      "priceCurrencyId": "gold",
+      "priceAmount": 130,
+      "isStackable": false,
+      "stockCount": 1
+    },
+    {
+      "id": "relic_bundle",
+      "displayName": "Relic Bundle",
+      "description": "A bundled trade item exchanged for trophies.",
+      "priceCurrencyId": "loot",
+      "priceAmount": 2,
+      "isStackable": true,
+      "stockCount": 4
+    }
+  ]
+}

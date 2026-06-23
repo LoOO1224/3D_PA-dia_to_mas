@@ -1,0 +1,47 @@
+using DiaToMas.Data;
+using DiaToMas.Models;
+using DiaToMas.Services;
+using UnityEngine;
+
+namespace DiaToMas.Managers
+{
+    public class GameManager : MonoBehaviour
+    {
+        [SerializeField] private GameDataManager _gameDataManager;
+
+        private PlayerModel _playerModel;
+        private ShopTransactionService _shopTransactionService;
+
+        public static GameManager Inst { get; private set; }
+        public GameDataManager GameDataManager => _gameDataManager;
+        public PlayerModel PlayerModel => _playerModel;
+        public ShopTransactionService ShopTransactionService => _shopTransactionService;
+
+        private void Awake()
+        {
+            if (Inst != null && Inst != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Inst = this;
+            DontDestroyOnLoad(gameObject);
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            _gameDataManager = _gameDataManager != null ? _gameDataManager : GetComponent<GameDataManager>();
+            _gameDataManager.LoadData();
+
+            _playerModel = new PlayerModel();
+            foreach (CurrencyData currencyData in _gameDataManager.CurrencyDataById.Values)
+            {
+                _playerModel.WalletModel.SetAmount(currencyData.id, currencyData.startAmount);
+            }
+
+            _shopTransactionService = new ShopTransactionService();
+        }
+    }
+}
