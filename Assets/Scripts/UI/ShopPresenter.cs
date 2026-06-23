@@ -143,7 +143,7 @@ namespace DiaToMas.UI
                 string currencyName = GetCurrencyName(sellCurrencyId);
                 int sellAmount = GetSellAmount(itemData);
 
-                row.Setup(itemData, itemModel.Amount, currencyName, sellAmount, SellItem);
+                row.Setup(itemData, itemModel.Amount, currencyName, sellAmount, SellItem, DismantleItem, DropItemToWorld);
                 _spawnedInventoryRows.Add(row);
             }
         }
@@ -166,6 +166,35 @@ namespace DiaToMas.UI
             PlayerModel playerModel = GameManager.Inst.PlayerModel;
             ShopStockModel stockModel = GameManager.Inst.ShopStockModel;
             bool isSuccess = GameManager.Inst.ShopTransactionService.TrySell(playerModel, stockModel, itemData, GetSelectedQuantity(), out string message);
+            SetFeedback(message);
+
+            if (isSuccess)
+            {
+                Refresh();
+            }
+        }
+
+        public void DismantleItem(ShopItemData itemData)
+        {
+            PlayerModel playerModel = GameManager.Inst.PlayerModel;
+            bool isSuccess = GameManager.Inst.ShopTransactionService.TryDismantle(playerModel, itemData, GetSelectedQuantity(), out string message);
+            SetFeedback(message);
+
+            if (isSuccess)
+            {
+                Refresh();
+            }
+        }
+
+        private void DropItemToWorld(ShopItemData itemData)
+        {
+            if (GameManager.Inst.WorldItemDropper == null)
+            {
+                SetFeedback("전리품을 내려놓을 수 없습니다.");
+                return;
+            }
+
+            bool isSuccess = GameManager.Inst.WorldItemDropper.TryDrop(itemData, GetSelectedQuantity(), out string message);
             SetFeedback(message);
 
             if (isSuccess)

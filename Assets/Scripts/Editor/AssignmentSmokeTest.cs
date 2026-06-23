@@ -49,6 +49,9 @@ namespace DiaToMas.Editor
             Collider merchantCollider = RequireComponent<Collider>(merchant);
             Require(merchantCollider.isTrigger, "Merchant collider must be a trigger.");
 
+            GameObject pickup = RequireGameObject("WorldPickup_WolfPelt");
+            RequireComponent<WorldItemPickup>(pickup);
+
             GameObject cameraObject = RequireGameObject("ThirdPersonCamera");
             RequireComponent<Camera>(cameraObject);
             RequireComponent<ThirdPersonCameraFollow>(cameraObject);
@@ -61,11 +64,17 @@ namespace DiaToMas.Editor
         {
             GameDataManager dataManager = UnityEngine.Object.FindFirstObjectByType<GameDataManager>();
             Require(dataManager != null, "Scene needs a GameDataManager.");
+            GameManager gameManager = UnityEngine.Object.FindFirstObjectByType<GameManager>();
+            Require(gameManager != null, "Scene needs a GameManager.");
+            WorldItemDropper itemDropper = UnityEngine.Object.FindFirstObjectByType<WorldItemDropper>();
+            Require(itemDropper != null, "Scene needs a WorldItemDropper.");
 
             RequireReference(dataManager, "_currencyDataJson");
             RequireReference(dataManager, "_shopItemDataJson");
             RequireReference(dataManager, "_startingInventoryDataJson");
             RequireReference(dataManager, "_playerMovementDataJson");
+            RequireReference(gameManager, "_worldItemDropper");
+            RequireReference(itemDropper, "_pickupPrefab");
         }
 
         private static void ValidateShopPresenterReferences()

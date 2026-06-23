@@ -16,6 +16,7 @@ namespace DiaToMas.Editor
         private const string ScenePath = "Assets/Scenes/3D_PA-dia_to_mas.unity";
         private const string RowPrefabPath = "Assets/Prefabs/UI/ShopItemButtonView.prefab";
         private const string InventoryRowPrefabPath = "Assets/Prefabs/UI/InventoryItemRowView.prefab";
+        private const string PickupPrefabPath = "Assets/Prefabs/World/WorldItemPickup.prefab";
 
         private static readonly string[] BuildRootNames =
         {
@@ -27,6 +28,7 @@ namespace DiaToMas.Editor
             "Main Camera",
             "ThirdPersonCamera",
             "ShopCanvas",
+            "WorldPickup_WolfPelt",
             "EventSystem",
             "Directional Light",
             "Sun Light",
@@ -45,8 +47,9 @@ namespace DiaToMas.Editor
 
             ShopItemButtonView itemRowPrefab = CreateShopItemRowPrefab();
             InventoryItemRowView inventoryRowPrefab = CreateInventoryItemRowPrefab();
+            WorldItemPickup pickupPrefab = CreateWorldItemPickupPrefab();
             ShopPresenter shopPresenter = CreateShopCanvas(itemRowPrefab, inventoryRowPrefab);
-            CreateGameManager();
+            CreateGameManager(pickupPrefab);
             CreateEnvironment(groundMaterial, fallbackMaterial, woodMaterial);
 
             Camera camera = CreateCamera();
@@ -55,6 +58,7 @@ namespace DiaToMas.Editor
             cameraFollow.SetTarget(player.transform);
 
             CreateMerchant(shopPresenter);
+            CreateStartingWorldPickup(pickupPrefab);
             CreateLighting();
 
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
@@ -75,17 +79,20 @@ namespace DiaToMas.Editor
             }
         }
 
-        private static void CreateGameManager()
+        private static void CreateGameManager(WorldItemPickup pickupPrefab)
         {
             GameObject gameManagerObject = new("GameManager");
             GameDataManager dataManager = gameManagerObject.AddComponent<GameDataManager>();
+            WorldItemDropper itemDropper = gameManagerObject.AddComponent<WorldItemDropper>();
             GameManager gameManager = gameManagerObject.AddComponent<GameManager>();
 
             SetObject(dataManager, "_currencyDataJson", Load<TextAsset>("Assets/Resources/GameData/currency_data.json"));
             SetObject(dataManager, "_shopItemDataJson", Load<TextAsset>("Assets/Resources/GameData/shop_item_data.json"));
             SetObject(dataManager, "_startingInventoryDataJson", Load<TextAsset>("Assets/Resources/GameData/starting_inventory_data.json"));
             SetObject(dataManager, "_playerMovementDataJson", Load<TextAsset>("Assets/Resources/GameData/player_movement_data.json"));
+            SetObject(itemDropper, "_pickupPrefab", pickupPrefab);
             SetObject(gameManager, "_gameDataManager", dataManager);
+            SetObject(gameManager, "_worldItemDropper", itemDropper);
         }
 
         private static void CreateEnvironment(Material groundMaterial, Material fallbackMaterial, Material woodMaterial)
@@ -282,6 +289,13 @@ namespace DiaToMas.Editor
 
             Text feedbackText = CreateText("FeedbackText", panel.transform, string.Empty, 20, TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 54f), new Vector2(-70f, 36f));
             feedbackText.color = new Color(1f, 0.78f, 0.42f);
+            GameObject dismantleDropZone = CreatePanel("DismantleDropZone", panel.transform, new Color(0.24f, 0.13f, 0.1f, 0.92f), new Vector2(0.5f, 0f), new Vector2(300f, 42f));
+            RectTransform dismantleDropZoneRect = dismantleDropZone.GetComponent<RectTransform>();
+            dismantleDropZoneRect.anchorMin = new Vector2(0.5f, 0f);
+            dismantleDropZoneRect.anchorMax = new Vector2(0.5f, 0f);
+            dismantleDropZoneRect.anchoredPosition = new Vector2(0f, 22f);
+            CreateText("DropZoneText", dismantleDropZone.transform, "드래그해서 분해", 16, TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            dismantleDropZone.AddComponent<DismantleDropZone>();
 
             Button closeButton = CreateButton("CloseButton", panel.transform, "닫기", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-84f, -36f), new Vector2(120f, 42f));
             ShopQuantitySelector quantitySelector = panel.AddComponent<ShopQuantitySelector>();
@@ -331,18 +345,59 @@ namespace DiaToMas.Editor
             GameObject row = CreatePanel("InventoryItemRow", null, new Color(0.17f, 0.135f, 0.095f, 0.96f), new Vector2(0.5f, 0.5f), new Vector2(340f, 58f));
             Text nameText = CreateText("NameText", row.transform, "아이템", 17, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(86f, 10f), new Vector2(160f, 24f));
             Text amountText = CreateText("AmountText", row.transform, "x0", 15, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(86f, -12f), new Vector2(70f, 22f));
-            Text sellPriceText = CreateText("SellPriceText", row.transform, "0 골드", 14, TextAnchor.MiddleRight, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-108f, 0f), new Vector2(88f, 24f));
-            Button sellButton = CreateButton("SellButton", row.transform, "판매", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-38f, 0f), new Vector2(64f, 32f));
+            Text sellPriceText = CreateText("SellPriceText", row.transform, "0 골드", 14, TextAnchor.MiddleRight, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-142f, 0f), new Vector2(88f, 24f));
+            Button sellButton = CreateButton("SellButton", row.transform, "판매", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-72f, 0f), new Vector2(58f, 32f));
+            Button dismantleButton = CreateButton("DismantleButton", row.transform, "분해", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-25f, 0f), new Vector2(58f, 32f));
 
             InventoryItemRowView rowView = row.AddComponent<InventoryItemRowView>();
             SetObject(rowView, "_nameText", nameText);
             SetObject(rowView, "_amountText", amountText);
             SetObject(rowView, "_sellPriceText", sellPriceText);
             SetObject(rowView, "_sellButton", sellButton);
+            SetObject(rowView, "_dismantleButton", dismantleButton);
 
             PrefabUtility.SaveAsPrefabAsset(row, InventoryRowPrefabPath);
             Object.DestroyImmediate(row);
             return Load<GameObject>(InventoryRowPrefabPath).GetComponent<InventoryItemRowView>();
+        }
+
+        private static WorldItemPickup CreateWorldItemPickupPrefab()
+        {
+            EnsureFolder("Assets/Prefabs/World", "Assets/Prefabs", "World");
+            GameObject sourcePrefab = Load<GameObject>("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Pouch_01.prefab");
+            GameObject pickupObject = sourcePrefab != null
+                ? (GameObject)PrefabUtility.InstantiatePrefab(sourcePrefab)
+                : GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+            pickupObject.name = "WorldItemPickup";
+            SphereCollider trigger = pickupObject.GetComponent<SphereCollider>();
+            if (trigger == null)
+            {
+                trigger = pickupObject.AddComponent<SphereCollider>();
+            }
+
+            trigger.radius = 1f;
+            trigger.isTrigger = true;
+
+            WorldItemPickup pickup = pickupObject.GetComponent<WorldItemPickup>();
+            if (pickup == null)
+            {
+                pickup = pickupObject.AddComponent<WorldItemPickup>();
+            }
+
+            SetString(pickup, "_itemId", "wolf_pelt");
+            SetInt(pickup, "_amount", 1);
+            PrefabUtility.SaveAsPrefabAsset(pickupObject, PickupPrefabPath);
+            Object.DestroyImmediate(pickupObject);
+            return Load<GameObject>(PickupPrefabPath).GetComponent<WorldItemPickup>();
+        }
+
+        private static void CreateStartingWorldPickup(WorldItemPickup pickupPrefab)
+        {
+            WorldItemPickup pickup = (WorldItemPickup)PrefabUtility.InstantiatePrefab(pickupPrefab);
+            pickup.name = "WorldPickup_WolfPelt";
+            pickup.transform.SetPositionAndRotation(new Vector3(1.7f, 0.35f, 5.2f), Quaternion.identity);
+            pickup.Setup("wolf_pelt", 1);
         }
 
         private static void CreateEventSystem()
@@ -480,6 +535,14 @@ namespace DiaToMas.Editor
             return AssetDatabase.LoadAssetAtPath<T>(assetPath);
         }
 
+        private static void EnsureFolder(string folderPath, string parentFolderPath, string folderName)
+        {
+            if (!AssetDatabase.IsValidFolder(folderPath))
+            {
+                AssetDatabase.CreateFolder(parentFolderPath, folderName);
+            }
+        }
+
         private static void SetObject(Object target, string propertyName, Object value)
         {
             SerializedObject serializedObject = new(target);
@@ -498,6 +561,13 @@ namespace DiaToMas.Editor
         {
             SerializedObject serializedObject = new(target);
             serializedObject.FindProperty(propertyName).floatValue = value;
+            serializedObject.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void SetInt(Object target, string propertyName, int value)
+        {
+            SerializedObject serializedObject = new(target);
+            serializedObject.FindProperty(propertyName).intValue = value;
             serializedObject.ApplyModifiedPropertiesWithoutUndo();
         }
     }

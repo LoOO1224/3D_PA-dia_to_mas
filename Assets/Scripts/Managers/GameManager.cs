@@ -1,4 +1,5 @@
 using DiaToMas.Data;
+using DiaToMas.Interaction;
 using DiaToMas.Models;
 using DiaToMas.Services;
 using UnityEngine;
@@ -8,6 +9,7 @@ namespace DiaToMas.Managers
     public class GameManager : MonoBehaviour
     {
         [SerializeField] private GameDataManager _gameDataManager;
+        [SerializeField] private WorldItemDropper _worldItemDropper;
 
         private PlayerModel _playerModel;
         private ShopStockModel _shopStockModel;
@@ -19,6 +21,7 @@ namespace DiaToMas.Managers
         public PlayerModel PlayerModel => _playerModel;
         public ShopStockModel ShopStockModel => _shopStockModel;
         public ShopTransactionService ShopTransactionService => _shopTransactionService;
+        public WorldItemDropper WorldItemDropper => _worldItemDropper;
         public bool IsPlayerInputLocked => _isPlayerInputLocked;
 
         private void Awake()
@@ -37,6 +40,7 @@ namespace DiaToMas.Managers
         private void Initialize()
         {
             _gameDataManager = _gameDataManager != null ? _gameDataManager : GetComponent<GameDataManager>();
+            _worldItemDropper = _worldItemDropper != null ? _worldItemDropper : GetComponent<WorldItemDropper>();
             _gameDataManager.LoadData();
 
             _playerModel = new PlayerModel();
