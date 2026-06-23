@@ -17,6 +17,13 @@ namespace DiaToMas.Editor
         private const string RowPrefabPath = "Assets/Prefabs/UI/ShopItemButtonView.prefab";
         private const string InventoryRowPrefabPath = "Assets/Prefabs/UI/InventoryItemRowView.prefab";
         private const string PickupPrefabPath = "Assets/Prefabs/World/WorldItemPickup.prefab";
+        private const string PanelFrameSpritePath = "Assets/ImportedAssets/GuiProCasualGame/Frame/BasicFrame_Round20.png";
+        private const string ListFrameSpritePath = "Assets/ImportedAssets/GuiProCasualGame/Frame/BasicFrame_Square.png";
+        private const string RowFrameSpritePath = "Assets/ImportedAssets/GuiProCasualGame/Frame/ItemFrame02_Single_Yellow.png";
+        private const string ButtonSpritePath = "Assets/ImportedAssets/GuiProCasualGame/Button/Button_TaperedDown_Green.png";
+        private const string GoldIconSpritePath = "Assets/Resources/UI/GuiProCasualGame/Icon/Pictoicon_Coin_Star.png";
+        private const string CrystalIconSpritePath = "Assets/Resources/UI/GuiProCasualGame/Icon/Pictoicon_Crystal.png";
+        private const string DefaultItemIconSpritePath = "Assets/Resources/UI/GuiProCasualGame/Icon/Icon_Chest.png";
 
         private static readonly string[] BuildRootNames =
         {
@@ -122,6 +129,17 @@ namespace DiaToMas.Editor
             PlacePrefab("Assets/ImportedAssets/VillageInteriorsKit/3DForge/Fantasy_Interiors/Villages_&_Towns/Prefabs/Props/Food/fi_vil_food_bread03.prefab", "Counter_Bread", new Vector3(-0.7f, 1f, 1.2f), Quaternion.identity, Vector3.one, shopRoot.transform, fallbackMaterial);
             PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Gem_04.prefab", "Counter_Crystal", new Vector3(0.9f, 1f, 1.2f), Quaternion.identity, Vector3.one * 0.8f, shopRoot.transform, fallbackMaterial);
             PlacePrefab("Assets/ImportedAssets/VillageInteriorsKit/3DForge/Fantasy_Interiors/Villages_&_Towns/Prefabs/Props/Lighting/Hanging/fi_vil_light_lamp04_02.prefab", "Shop_Lamp", new Vector3(0f, 2.5f, -0.8f), Quaternion.identity, Vector3.one, shopRoot.transform, fallbackMaterial);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Crate_01.prefab", "Shop_Crate_Left", new Vector3(-2.25f, 0f, 0.45f), Quaternion.Euler(0f, 18f, 0f), Vector3.one * 0.85f, shopRoot.transform, woodMaterial);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Crate_01.prefab", "Shop_Crate_Right", new Vector3(2.35f, 0f, 1.15f), Quaternion.Euler(0f, -16f, 0f), Vector3.one * 0.75f, shopRoot.transform, woodMaterial);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Pouch_01.prefab", "Counter_Coin_Pouch", new Vector3(0.25f, 1.02f, 1.15f), Quaternion.Euler(0f, 25f, 0f), Vector3.one * 0.72f, shopRoot.transform, fallbackMaterial);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Ingot_Gold_01.prefab", "Counter_Gold_Ingot", new Vector3(-0.2f, 1.04f, 1.15f), Quaternion.Euler(0f, -20f, 0f), Vector3.one * 0.7f, shopRoot.transform, fallbackMaterial);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Parchment_01.prefab", "Counter_Parchment", new Vector3(1.25f, 1.03f, 1.08f), Quaternion.Euler(0f, 120f, 0f), Vector3.one * 0.72f, shopRoot.transform, fallbackMaterial);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Goblet_01.prefab", "Counter_Goblet", new Vector3(-1.15f, 1.05f, 1.08f), Quaternion.Euler(0f, -40f, 0f), Vector3.one * 0.58f, shopRoot.transform, fallbackMaterial);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Book_03.prefab", "Shop_Table_Book", new Vector3(-1.75f, 0.72f, -0.55f), Quaternion.Euler(0f, 30f, 0f), Vector3.one * 0.68f, shopRoot.transform, fallbackMaterial);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Bottle_Clear_Labelled_02.prefab", "Shelf_Potion_Bottle", new Vector3(-2.42f, 1.35f, -1.3f), Quaternion.Euler(0f, 70f, 0f), Vector3.one * 0.72f, shopRoot.transform, fallbackMaterial);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Jar_02.prefab", "Shelf_Jar_Goods", new Vector3(-2.35f, 0.78f, -1.85f), Quaternion.Euler(0f, 95f, 0f), Vector3.one * 0.75f, shopRoot.transform, fallbackMaterial);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Ring_03.prefab", "Counter_Ring_Display", new Vector3(0.65f, 1.04f, 1.1f), Quaternion.Euler(0f, 20f, 0f), Vector3.one * 0.55f, shopRoot.transform, fallbackMaterial);
+            PlacePrefab("Assets/PolygonFantasyKingdom/Prefabs/Items/SM_Item_Necklace_Flat_02.prefab", "Counter_Necklace_Display", new Vector3(0.02f, 1.05f, 0.86f), Quaternion.Euler(0f, -12f, 0f), Vector3.one * 0.6f, shopRoot.transform, fallbackMaterial);
 
             GameObject villageRoot = new("Outside_Village");
             villageRoot.transform.SetParent(root.transform);
@@ -265,14 +283,24 @@ namespace DiaToMas.Editor
             promptObject.SetActive(false);
 
             GameObject panel = CreatePanel("ShopPanel", canvasObject.transform, new Color(0.08f, 0.065f, 0.045f, 0.94f), new Vector2(0.5f, 0.5f), new Vector2(980f, 620f));
+            ApplyImageSprite(panel, PanelFrameSpritePath, Image.Type.Sliced);
+            GameObject titleFrame = CreatePanel("TitleFrame", panel.transform, new Color(0.33f, 0.18f, 0.08f, 0.72f), new Vector2(0.5f, 1f), new Vector2(880f, 56f));
+            RectTransform titleFrameRect = titleFrame.GetComponent<RectTransform>();
+            titleFrameRect.anchorMin = new Vector2(0.5f, 1f);
+            titleFrameRect.anchorMax = new Vector2(0.5f, 1f);
+            titleFrameRect.anchoredPosition = new Vector2(0f, -40f);
+            ApplyImageSprite(titleFrame, ListFrameSpritePath, Image.Type.Sliced);
             Text titleText = CreateText("TitleText", panel.transform, "신더킵 상점", 31, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -38f), new Vector2(-70f, 54f));
             titleText.color = new Color(1f, 0.86f, 0.56f);
 
-            Text walletText = CreateText("WalletText", panel.transform, string.Empty, 19, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -88f), new Vector2(-70f, 34f));
+            CreateImage("GoldIcon", panel.transform, GoldIconSpritePath, new Color(1f, 0.82f, 0.3f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(52f, -88f), new Vector2(26f, 26f));
+            CreateImage("CrystalIcon", panel.transform, CrystalIconSpritePath, new Color(0.48f, 0.9f, 1f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(84f, -88f), new Vector2(26f, 26f));
+            Text walletText = CreateText("WalletText", panel.transform, string.Empty, 19, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(44f, -88f), new Vector2(-150f, 34f));
             Text quantityText = CreateText("QuantityText", panel.transform, "수량: 1", 18, TextAnchor.MiddleRight, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-150f, -88f), new Vector2(220f, 34f));
 
             CreateText("ShopHeaderText", panel.transform, "상점 물품", 22, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(258f, -128f), new Vector2(420f, 32f));
             Transform itemRoot = CreatePanel("ItemRoot", panel.transform, new Color(0.12f, 0.1f, 0.075f, 0.82f), new Vector2(0f, 1f), new Vector2(520f, 350f)).transform;
+            ApplyImageSprite(itemRoot.gameObject, ListFrameSpritePath, Image.Type.Sliced);
             RectTransform itemRootRect = itemRoot.GetComponent<RectTransform>();
             itemRootRect.anchorMin = new Vector2(0f, 1f);
             itemRootRect.anchorMax = new Vector2(0f, 1f);
@@ -281,6 +309,7 @@ namespace DiaToMas.Editor
 
             Text inventoryText = CreateText("InventoryText", panel.transform, "인벤토리: 비어 있음", 22, TextAnchor.MiddleLeft, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-248f, -128f), new Vector2(390f, 32f));
             Transform inventoryRoot = CreatePanel("InventoryRoot", panel.transform, new Color(0.105f, 0.09f, 0.07f, 0.82f), new Vector2(1f, 1f), new Vector2(360f, 350f)).transform;
+            ApplyImageSprite(inventoryRoot.gameObject, ListFrameSpritePath, Image.Type.Sliced);
             RectTransform inventoryRootRect = inventoryRoot.GetComponent<RectTransform>();
             inventoryRootRect.anchorMin = new Vector2(1f, 1f);
             inventoryRootRect.anchorMax = new Vector2(1f, 1f);
@@ -290,6 +319,7 @@ namespace DiaToMas.Editor
             Text feedbackText = CreateText("FeedbackText", panel.transform, string.Empty, 20, TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 54f), new Vector2(-70f, 36f));
             feedbackText.color = new Color(1f, 0.78f, 0.42f);
             GameObject dismantleDropZone = CreatePanel("DismantleDropZone", panel.transform, new Color(0.24f, 0.13f, 0.1f, 0.92f), new Vector2(0.5f, 0f), new Vector2(300f, 42f));
+            ApplyImageSprite(dismantleDropZone, RowFrameSpritePath, Image.Type.Sliced);
             RectTransform dismantleDropZoneRect = dismantleDropZone.GetComponent<RectTransform>();
             dismantleDropZoneRect.anchorMin = new Vector2(0.5f, 0f);
             dismantleDropZoneRect.anchorMax = new Vector2(0.5f, 0f);
@@ -322,6 +352,8 @@ namespace DiaToMas.Editor
         private static ShopItemButtonView CreateShopItemRowPrefab()
         {
             GameObject row = CreatePanel("ShopItemRow", null, new Color(0.18f, 0.145f, 0.1f, 0.96f), new Vector2(0.5f, 0.5f), new Vector2(500f, 78f));
+            ApplyImageSprite(row, RowFrameSpritePath, Image.Type.Sliced);
+            Image iconImage = CreateImage("IconImage", row.transform, DefaultItemIconSpritePath, Color.white, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(46f, 0f), new Vector2(44f, 44f));
             Text nameText = CreateText("NameText", row.transform, "아이템", 18, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(112f, -18f), new Vector2(210f, 24f));
             Text descriptionText = CreateText("DescriptionText", row.transform, "설명", 13, TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(204f, 22f), new Vector2(340f, 24f));
             Text priceText = CreateText("PriceText", row.transform, "0 골드", 15, TextAnchor.MiddleRight, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-152f, -20f), new Vector2(120f, 26f));
@@ -333,6 +365,7 @@ namespace DiaToMas.Editor
             SetObject(buttonView, "_descriptionText", descriptionText);
             SetObject(buttonView, "_priceText", priceText);
             SetObject(buttonView, "_stockText", stockText);
+            SetObject(buttonView, "_iconImage", iconImage);
             SetObject(buttonView, "_buyButton", buyButton);
 
             PrefabUtility.SaveAsPrefabAsset(row, RowPrefabPath);
@@ -343,6 +376,8 @@ namespace DiaToMas.Editor
         private static InventoryItemRowView CreateInventoryItemRowPrefab()
         {
             GameObject row = CreatePanel("InventoryItemRow", null, new Color(0.17f, 0.135f, 0.095f, 0.96f), new Vector2(0.5f, 0.5f), new Vector2(340f, 58f));
+            ApplyImageSprite(row, RowFrameSpritePath, Image.Type.Sliced);
+            Image iconImage = CreateImage("IconImage", row.transform, DefaultItemIconSpritePath, Color.white, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(34f, 0f), new Vector2(38f, 38f));
             Text nameText = CreateText("NameText", row.transform, "아이템", 17, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(86f, 10f), new Vector2(160f, 24f));
             Text amountText = CreateText("AmountText", row.transform, "x0", 15, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(86f, -12f), new Vector2(70f, 22f));
             Text sellPriceText = CreateText("SellPriceText", row.transform, "0 골드", 14, TextAnchor.MiddleRight, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-142f, 0f), new Vector2(88f, 24f));
@@ -353,6 +388,7 @@ namespace DiaToMas.Editor
             SetObject(rowView, "_nameText", nameText);
             SetObject(rowView, "_amountText", amountText);
             SetObject(rowView, "_sellPriceText", sellPriceText);
+            SetObject(rowView, "_iconImage", iconImage);
             SetObject(rowView, "_sellButton", sellButton);
             SetObject(rowView, "_dismantleButton", dismantleButton);
 
@@ -481,8 +517,23 @@ namespace DiaToMas.Editor
             RectTransform rectTransform = panel.GetComponent<RectTransform>();
             rectTransform.pivot = pivot;
             rectTransform.sizeDelta = size;
-            panel.GetComponent<Image>().color = color;
+            Image image = panel.GetComponent<Image>();
+            image.color = color;
             return panel;
+        }
+
+        private static Image CreateImage(string name, Transform parent, string spritePath, Color color, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta)
+        {
+            GameObject imageObject = CreatePanel(name, parent, color, new Vector2(0.5f, 0.5f), sizeDelta);
+            RectTransform rectTransform = imageObject.GetComponent<RectTransform>();
+            rectTransform.anchorMin = anchorMin;
+            rectTransform.anchorMax = anchorMax;
+            rectTransform.anchoredPosition = anchoredPosition;
+
+            Image image = imageObject.GetComponent<Image>();
+            image.raycastTarget = false;
+            ApplyImageSprite(imageObject, spritePath, Image.Type.Simple);
+            return image;
         }
 
         private static Text CreateText(string name, Transform parent, string text, int fontSize, TextAnchor alignment, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta)
@@ -514,10 +565,36 @@ namespace DiaToMas.Editor
 
             Button button = buttonObject.AddComponent<Button>();
             button.targetGraphic = buttonObject.GetComponent<Image>();
+            ApplyImageSprite(buttonObject, ButtonSpritePath, Image.Type.Sliced);
+            ApplyButtonColors(button);
             Text labelText = CreateText("Label", buttonObject.transform, label, 17, TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             labelText.rectTransform.offsetMin = Vector2.zero;
             labelText.rectTransform.offsetMax = Vector2.zero;
             return button;
+        }
+
+        private static void ApplyImageSprite(GameObject target, string spritePath, Image.Type imageType)
+        {
+            Image image = target.GetComponent<Image>();
+            Sprite sprite = Load<Sprite>(spritePath);
+            if (image == null || sprite == null)
+            {
+                return;
+            }
+
+            image.sprite = sprite;
+            image.type = imageType;
+        }
+
+        private static void ApplyButtonColors(Button button)
+        {
+            ColorBlock colors = button.colors;
+            colors.normalColor = new Color(0.82f, 0.58f, 0.25f, 1f);
+            colors.highlightedColor = new Color(1f, 0.72f, 0.32f, 1f);
+            colors.pressedColor = new Color(0.54f, 0.34f, 0.14f, 1f);
+            colors.selectedColor = colors.highlightedColor;
+            colors.disabledColor = new Color(0.32f, 0.28f, 0.22f, 0.68f);
+            button.colors = colors;
         }
 
         private static void AddVerticalLayout(GameObject target, RectOffset padding, float spacing)

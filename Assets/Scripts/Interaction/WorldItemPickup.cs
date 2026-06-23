@@ -8,7 +8,6 @@ namespace DiaToMas.Interaction
     {
         [SerializeField] private string _itemId;
         [SerializeField] private int _amount = 1;
-        [SerializeField] private string _promptMessage = "전리품 획득: E 또는 좌클릭";
 
         private PlayerInputReader _currentInputReader;
 

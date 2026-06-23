@@ -103,4 +103,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DiaToMas.Interaction.WorldItemPickup
   _itemId: wolf_pelt
   _amount: 1
-  _promptMessage: "\uC804\uB9AC\uD488 \uD68D\uB4DD: E \uB610\uB294 \uC88C\uD074\uB9AD"

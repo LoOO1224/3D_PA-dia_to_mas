@@ -7,6 +7,7 @@ namespace DiaToMas.Data
     {
         public string displayName;
         public string description;
+        public string iconResourcePath;
         public string priceCurrencyId;
         public int priceAmount;
         public string sellCurrencyId;

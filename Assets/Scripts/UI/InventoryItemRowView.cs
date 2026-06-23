@@ -11,6 +11,7 @@ namespace DiaToMas.UI
         [SerializeField] private Text _nameText;
         [SerializeField] private Text _amountText;
         [SerializeField] private Text _sellPriceText;
+        [SerializeField] private Image _iconImage;
         [SerializeField] private Button _sellButton;
         [SerializeField] private Button _dismantleButton;
 
@@ -45,6 +46,7 @@ namespace DiaToMas.UI
             _sellPriceText.text = $"{sellAmount} {currencyName}";
             _sellButton.interactable = amount > 0;
             _dismantleButton.interactable = amount > 0;
+            ItemIconLoader.Apply(_iconImage, itemData);
             SetActionButtonsVisible(false);
         }
 
