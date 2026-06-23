@@ -18,6 +18,7 @@ namespace DiaToMas.Player
         private Vector3 _moveDirection;
 
         public bool IsGrounded => _isGrounded;
+        public bool IsRunning => _inputReader != null && _inputReader.IsRunHeld && _moveDirection.sqrMagnitude > 0.001f;
         public float VerticalSpeed => _rigidbody != null ? _rigidbody.linearVelocity.y : 0f;
         public float MoveAmount => _moveDirection.magnitude;
 
@@ -64,7 +65,7 @@ namespace DiaToMas.Player
 
         private void TryJump()
         {
-            if (!_inputReader.IsJumpPressed || !_isGrounded)
+            if (!_inputReader.ConsumeJump() || !_isGrounded)
             {
                 return;
             }

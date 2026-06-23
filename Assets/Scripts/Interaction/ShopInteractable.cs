@@ -43,7 +43,7 @@ namespace DiaToMas.Interaction
 
         private void TryOpenShop()
         {
-            if (_currentInputReader == null || !_currentInputReader.IsInteractPressed)
+            if (_currentInputReader == null || !_currentInputReader.ConsumeInteract())
             {
                 return;
             }

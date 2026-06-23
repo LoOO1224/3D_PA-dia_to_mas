@@ -20,12 +20,6 @@ namespace DiaToMas.Player
             ReadActionInput();
         }
 
-        private void LateUpdate()
-        {
-            _isJumpPressed = false;
-            _isInteractPressed = false;
-        }
-
         private void ReadMoveInput()
         {
             _moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
@@ -37,6 +31,28 @@ namespace DiaToMas.Player
             _isJumpPressed = Input.GetButtonDown("Jump");
             _isInteractPressed = Input.GetKeyDown(KeyCode.E);
             _isRunHeld = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        }
+
+        public bool ConsumeJump()
+        {
+            if (!_isJumpPressed)
+            {
+                return false;
+            }
+
+            _isJumpPressed = false;
+            return true;
+        }
+
+        public bool ConsumeInteract()
+        {
+            if (!_isInteractPressed)
+            {
+                return false;
+            }
+
+            _isInteractPressed = false;
+            return true;
         }
     }
 }
